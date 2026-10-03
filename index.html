@@ -177,9 +177,9 @@ h3.sec::before{content:"";width:12px;height:12px;border-radius:3px;background:va
 .switch input:checked + .track::after{transform:translateX(24px);background:#0B0E14}
 .switch input:focus-visible + .track{outline:3px solid var(--cyan);outline-offset:2px}
 
-.attempt{display:grid;gap:.5rem;margin:.8rem 0 0}
+.attempt{display:grid;grid-template-columns:minmax(0,1fr);gap:.5rem;margin:.8rem 0 0}
 .attempt .row{display:flex;gap:.5rem}
-.attempt input{flex:1;min-width:0;min-height:50px;padding:.5rem .8rem;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);font-size:1.1rem;font-family:var(--mono)}
+.attempt input{flex:1;min-width:0;width:100%;min-height:50px;padding:.5rem .8rem;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);font-size:1.1rem;font-family:var(--mono)}
 .attempt input:focus{border-color:var(--volt);outline:none;box-shadow:0 0 0 4px rgba(255,214,10,.2)}
 .btn{min-height:50px;padding:.5rem 1.2rem;border:0;border-radius:12px;background:var(--volt);color:#0B0E14;font-weight:700;cursor:pointer;transition:transform .1s, box-shadow .15s;box-shadow:0 4px 0 #B38F00}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #B38F00}
@@ -356,6 +356,47 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-conten
 .backup .row{display:flex;gap:.6rem;flex-wrap:wrap}
 .backup label.btn{cursor:pointer}
 
+/* ---------- v1.2: tables ---------- */
+.tabbar nav{grid-template-columns:repeat(4,1fr)}
+.books{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1rem;margin:0 0 1rem;display:grid;gap:.7rem}
+.book-row{display:grid;grid-template-columns:7.2rem 1fr;gap:.7rem;align-items:start;font-size:.93rem;line-height:1.45}
+.book-row .book{justify-self:start}
+.book{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:.2rem .45rem;border-radius:6px;white-space:nowrap;color:#0B0E14}
+.b-BS{background:var(--volt)} .b-OSG{background:var(--cyan)} .b-GN3{background:var(--lime)} .b-GEN{background:var(--line);color:var(--ink)}
+:root[data-theme="light"] .b-OSG,:root[data-theme="light"] .b-GN3{color:#fff}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .b-OSG,:root:not([data-theme="dark"]) .b-GN3{color:#fff}}
+.jump{margin:0 0 1.4rem}
+.jump .topic{text-decoration:none;color:inherit;font-size:.82rem;padding:.4rem .7rem}
+.tcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:1.1rem;margin:0 0 1rem;scroll-margin-top:80px;transition:border-color .4s, box-shadow .4s}
+.tcard.flash{border-color:var(--volt);box-shadow:0 0 0 4px rgba(255,214,10,.18)}
+.tcard h3{font-family:var(--head);font-size:1.25rem;letter-spacing:-.02em;margin:0 0 .3rem}
+.twhat{margin:0 0 .7rem;color:var(--muted);font-size:.95rem}
+.wheres,.used{display:flex;flex-wrap:wrap;gap:.45rem .7rem;align-items:center;margin:0 0 .6rem}
+.used{margin:.8rem 0 0}
+.used .topic{text-decoration:none;color:inherit;font-size:.82rem;padding:.35rem .7rem}
+.wl{font-family:var(--mono);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.where{display:inline-flex;align-items:center;gap:.4rem;font-weight:600;font-size:.92rem}
+.tcap{font-family:var(--mono);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:.9rem 0 .35rem}
+.tnote{font-size:.86rem;color:var(--muted);margin:.6rem 0 0;line-height:1.45}
+table.data{margin:0;border-radius:10px;overflow:hidden;font-size:.9rem}
+table.data th{font-family:var(--sans);font-size:.78rem;line-height:1.3;vertical-align:bottom;background:var(--surface2)}
+table.data td{font-variant-numeric:tabular-nums}
+table.data td:first-child{font-weight:700}
+table.data tbody tr:nth-child(even) td{background:color-mix(in srgb, var(--surface2) 55%, transparent)}
+table.data tbody tr{cursor:pointer}
+table.data tbody tr.hl td{background:color-mix(in srgb, var(--volt) 28%, var(--surface));color:var(--ink)}
+.tlinks{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin:-.4rem 0 1.2rem}
+.tlinks a{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none;color:inherit;font-size:.82rem;font-weight:600;padding:.35rem .7rem;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.tlinks a:hover{border-color:var(--acc)}
+.tlinks svg{width:15px;height:15px;color:var(--acc)}
+.lookups{display:grid;gap:.5rem;margin:0 0 1rem}
+details.lookup{margin:0;border-color:color-mix(in srgb, var(--cyan) 45%, var(--line))}
+details.lookup summary{font-weight:600;line-height:1.3}
+details.lookup summary small{display:block;font-weight:500;color:var(--muted);font-size:.82rem;margin-top:.1rem}
+details.lookup .lk{display:flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--cyan);margin-bottom:.15rem}
+details.lookup .lk svg{width:14px;height:14px}
+details.lookup[open] summary{color:var(--ink)}
+
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}.burst{display:none}}
 </style>
 </head>
@@ -371,6 +412,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-conten
 <main id="app"></main>
 <div class="tabbar"><nav aria-label="Sections">
   <a href="#/" data-tab="learn"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/><path d="M8.5 13h.01M12 13h.01M15.5 13h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01"/></svg></span>Learn</a>
+  <a href="#/tables" data-tab="tables"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20v3H6.5"/></svg></span>Tables</a>
   <a href="#/quiz" data-tab="quiz"><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4 13.5h6.5L9 22l10-12.5h-6.6L13.5 2z"/></svg></span>Quiz</a>
   <a href="#/progress" data-tab="progress"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 20V12M12 20V5M19 20v-9"/></svg></span>Progress</a>
 </nav></div>
@@ -379,6 +421,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-conten
 <div class="toast" id="toast" role="status" hidden></div>
 <footer>A learning aid for apprentices. Values are based on BS 7671 (18th Edition), the On-Site Guide and Guidance Note 3. Always check against the current edition you're using at college and on site, and ask your supervisor if a result doesn't look right.</footer>
 <script src="questions.js"></script>
+<script src="tables.js"></script>
 
 <script>
 (function(){
@@ -658,7 +701,7 @@ const CALCS = [
   compute(v){
     if (![v.ze,v.r12].every(Number.isFinite)) return {error:"Enter Ze and R1+R2."};
     const In=num(v.In), m=MULT[v.type], Ia=m*In;
-    const zs=v.ze+v.r12, max=0.95*230/Ia, max2=Math.floor(max*100)/100, lim=max2*0.8;
+    const zs=v.ze+v.r12, max=0.95*230/Ia, max2=Math.round(21850/Ia)/100, lim=Math.round(Math.round(21850/Ia)*0.8)/100;
     const steps=[
       `Add the outside and inside parts: ${tidy(v.ze)} + ${tidy(v.r12)} = <b>${fx(zs,2)} Ω</b>.`,
       `Find I<sub>a</sub>, the current that trips a Type ${v.type} instantly: ${m} × ${In} A = <b>${Ia} A</b>.`,
@@ -892,8 +935,9 @@ const store = {
 const BOLT = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4 13.5h6.5L9 22l10-12.5h-6.6L13.5 2z"/></svg>`;
 
 /* ---------- version: keep in step with VERSION in sw.js ---------- */
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.2.0";
 const WHATS_NEW = {
+  "1.2.0": ["New Tables tab: all the look-up tables, and where to find each one in the books", "Table lookup quiz: sums where you find the numbers yourself", "44 more multiple choice questions", "Max Zs now matches BS 7671 Table 41.3 exactly"],
   "1.1.0": ["Quiz mode with random practice sums", "Multiple choice: which test or sum fits the job", "Progress page with scores, retests and backups", "The app now tells you when there's an update"]
 };
 
@@ -1011,6 +1055,7 @@ function renderCalc(c){
   const chip = c.step ? `${grp.name} · Test ${c.step}` : grp.name;
   let html = `<div class="calc-hero"><span class="chip">${chip}${nailed.has(c.id)?" · ✓ Nailed":""}</span><h2>${c.title}</h2><p class="lede">${c.lede}</p></div>
   <div class="formula">${c.formula.map(f=>`<span class="eq">${f}</span>`).join("")}<span class="words">${c.words}</span></div>
+  ${(()=>{ const tl=TABLES.filter(t=>t.used.includes(c.id)); return tl.length?`<div class="tlinks">${tl.map(t=>`<a href="#/tables/${t.id}">${BOOK_ICON}${esc(t.title)}</a>`).join("")}</div>`:""; })()}
   <details class="explain" open><summary>What it's for</summary><div class="body">${c.what}</div></details>
   <details class="explain"><summary>Why it matters</summary><div class="body">${c.why}</div></details>
   <details class="explain"><summary>Where the numbers come from</summary><div class="body"><ul class="sources">${c.sources.map(s=>`<li><span class="tag ${s[0]}">${tagName[s[0]]}</span><span>${s[1]}</span></li>`).join("")}</ul></div></details>
@@ -1141,7 +1186,7 @@ const GEN = {
   zs(){
     if (Math.random()<0.5){ const ze=pick([0.2,0.25,0.35,0.35,0.8]), r12=rd(rnd(0.15,1.1),2), In=pick([6,16,20,32]);
       return {v:{ze,r12,type:"B",In:String(In)}, text:`Ze is ${ze} Ω and the R1 + R2 for a circuit is ${r12} Ω. What is Zs?`}; }
-    const type=pick(["B","B","C"]), In=pick([6,10,16,20,32,40]), m=MULT[type], Ia=m*In, max=Math.floor(0.95*230/Ia*100)/100;
+    const type=pick(["B","B","C"]), In=pick([6,10,16,20,32,40]), m=MULT[type], Ia=m*In, max=Math.round(21850/Ia)/100;
     return {custom:{label:"Maximum Zs", value:max, unit:"Ω", dp:2}, text:`What's the maximum Zs for a Type ${type} ${In} A breaker? Use 230 V and Cmin 0.95.`,
       steps:[`A Type ${type} trips instantly at ${m} × I<sub>n</sub>: ${m} × ${In} = <b>${Ia} A</b>.`, `Max Z<sub>s</sub> = (0.95 × 230) ÷ ${Ia} = 218.5 ÷ ${Ia} = <b>${fx(max,2)} Ω</b>.`]};
   },
@@ -1163,40 +1208,90 @@ const GEN = {
     return {v:{I,t,k:"115",cpc:"1.5"}, text:`The fault current is ${I} A and the breaker disconnects in ${t} s. Using k = 115, what's the minimum CPC size in mm²?`};
   }
 };
-function makeSum(id){
+// Table-lookup versions: the question leaves the data out, so it has to be found in the tables (shown alongside).
+const ZE_DECL = {"TN-C-S":0.35, "TN-S":0.8};
+const zmaxC = Ia=>Math.round(21850/Ia);
+const GENL = {
+  r1r2(){
+    const [l,c]=pick([["1.5","1"],["2.5","1.5"],["2.5","1.5"],["4","1.5"],["6","2.5"],["10","4"]]), L=ri(8,45);
+    return {v:{line:l,cpc:c,L,hot:false,meas:NaN}, tables:["res"], text:`A ${l}/${c} mm² twin and earth radial is ${L} m long. Look up the resistances and work out the R1 + R2 you'd expect at 20°C.`};
+  },
+  vd(){
+    const [s,lo,hi,kind]=pick([["1.5",4,8,"3"],["2.5",10,20,"5"],["4",18,28,"5"],["6",25,40,"5"],["10",32,45,"5"]]), ib=ri(lo,hi), L=ri(10,50);
+    return {v:{size:s,ib,L,kind}, tables:["cable"], text:`A ${s} mm² twin and earth carries ${ib} A over ${L} m. Look up its mV/A/m. What's the voltage drop in volts?`};
+  },
+  zs(){
+    const t=ri(0,2);
+    if (t===0){ const type=pick(["B","B","C","D"]), In=pick([6,10,16,20,32,40]), m=MULT[type], Ia=m*In, c=zmaxC(Ia);
+      return {custom:{label:"Maximum Zs", value:c/100, unit:"Ω", dp:2}, tables:["zsmax"], text:`Look up the maximum Zs for a Type ${type} ${In} A circuit breaker.`,
+        steps:[`BS 7671 Table 41.3: go to the Type ${type} column and the ${In} A row: <b>${fx(c/100,2)} Ω</b>.`, `Check it with the formula: (0.95 × 230) ÷ (${m} × ${In}) = 218.5 ÷ ${Ia} = <b>${fx(c/100,2)} Ω</b>.`]}; }
+    if (t===1){ const In=pick([6,10,16,20,32,40]), Ia=5*In, c=zmaxC(Ia), e=Math.round(c*0.8)/100;
+      return {custom:{label:"Max measured Zs", value:e, unit:"Ω", dp:2}, tables:["zsmax"], text:`You're testing a Type B ${In} A circuit with the cable cold. Using the 80% rule, what's the highest Zs reading you'd accept?`,
+        steps:[`Table 41.3 max Zs for a B${In}: <b>${fx(c/100,2)} Ω</b>.`, `80% of it: ${fx(c/100,2)} × 0.8 = <b>${fx(e,2)} Ω</b>. The On-Site Guide lists this figure directly.`]}; }
+    const sys=pick(["TN-C-S","TN-C-S","TN-S"]), ze=ZE_DECL[sys], r12=rd(rnd(0.15,1.1),2);
+    return {v:{ze,r12,type:"B",In:"32"}, tables:["ze"], text:`You can't measure Ze, so you use the typical declared value for a ${sys} supply. R1 + R2 is ${r12} Ω. What's Zs?`};
+  },
+  pfc(){
+    const sys=pick(["TN-C-S","TN-S"]);
+    return {v:{U:230,Z:ZE_DECL[sys],icn:"6000"}, tables:["ze"], text:`Using the typical declared Ze for a ${sys} supply, what's the prospective earth fault current in amps?`};
+  },
+  cable(){
+    for (;;){
+      const ib=ri(10,40), In=RATINGS.find(r=>r>=ib), temp=pick([25,30,35,40]), n=pick([1,2,2,3,4]);
+      const ca={25:"1.03",30:"1",35:"0.94",40:"0.87"}[temp], cg={1:"1",2:"0.8",3:"0.7",4:"0.65"}[n];
+      if (ca==="1" && cg==="1") continue;
+      const It=In/(num(ca)*num(cg)), size=SIZES.find(s=>IT.C[s]>=It);
+      if (!size) continue;
+      const v={ib,In:String(In),ca,cg,ci:"1",cc:"1",method:"C"}, r=CALC("cable").compute(v);
+      return {custom:{label:"Cable size", value:num(size), unit:"mm²", dp:size.includes(".")?1:0}, tables:["ca","cg","cable"], steps:r.steps,
+        text:`Ib is ${ib} A on a ${In} A Type B MCB. The twin and earth is clipped direct (Method C) in an ambient of ${temp}°C, ${n===1?"not grouped with anything":`bunched with ${n-1} other circuit${n>2?"s":""}`}. Look up Ca, Cg and the current ratings. What's the smallest cable size that will do?`};
+    }
+  },
+  adiabatic(){
+    const zs=rd(rnd(0.4,1.4),2), I=Math.round(230/zs), t=pick([0.1,0.1,0.4]), sep=Math.random()<0.35;
+    return {v:{I,t,k:sep?"143":"115",cpc:"1.5"}, tables:["k"], text:`The fault current is ${I} A and the breaker disconnects in ${t} s. The CPC is ${sep?"a separate PVC-insulated copper conductor":"the bare core of a twin and earth cable (70°C thermoplastic)"}. Look up k. What's the minimum CPC size in mm²?`};
+  }
+};
+const LOOK_IDS = Object.keys(GENL);
+
+function makeSum(id, look){
+  const G = look && GENL[id] ? GENL : GEN;
   for (let tries=0; tries<5; tries++){
-    const g=GEN[id]();
-    if (g.custom) return {kind:"sum", topic:id, text:g.text, ans:g.custom, steps:g.steps};
+    const g=G[id](), base={kind:"sum", topic:id, look:G===GENL, tables:g.tables||null, text:g.text};
+    if (g.custom) return Object.assign(base, {ans:g.custom, steps:g.steps});
     const r=CALC(id).compute(g.v);
-    if (!r.error) return {kind:"sum", topic:id, text:g.text, ans:{label:r.answer.label, value:r.answer.value, unit:r.answer.unit, dp:r.answer.dp}, steps:r.steps};
+    if (!r.error) return Object.assign(base, {ans:{label:r.answer.label, value:r.answer.value, unit:r.answer.unit, dp:r.answer.dp}, steps:r.steps});
   }
   return null;
 }
 const makeMcq = m=>({kind:"mcq", id:m.id, topic:m.topic, order:shuffle(m.options.map((_,i)=>i))});
-function sumsFor(n, ids){ const out=[]; let pool=[]; while(out.length<n){ if(!pool.length) pool=shuffle(ids); const q=makeSum(pool.pop()); if(q) out.push(q); } return out; }
+function sumsFor(n, ids, look){ const out=[]; let pool=[]; while(out.length<n){ if(!pool.length) pool=shuffle(ids); const q=makeSum(pool.pop(), look); if(q) out.push(q); } return out; }
 
+const BOOK_ICON_Q = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20v3H6.5"/></svg>`;
 const QUIZZES = {
   mixed:   {name:"Quick fire", desc:"10 questions mixing sums and multiple choice.", ico:BOLT, g:"basics"},
   sums:    {name:"Practice sums", desc:"10 calculations with fresh numbers every time.", ico:"Σ", g:"dead"},
-  which:   {name:"Which test? Which sum?", desc:"10 multiple choice on picking the right test or equation.", ico:"?", g:"live"},
-  mistakes:{name:"Retry my mistakes", desc:"Questions you've got wrong before, until you get them right.", ico:"↺", g:"design"}
+  which:   {name:"Which test? Which sum?", desc:"10 multiple choice on picking the right test, equation or table.", ico:"?", g:"live"},
+  lookup:  {name:"Table lookup", desc:"10 sums where you find the numbers in the tables first, like in the exam.", ico:BOOK_ICON_Q, g:"design"},
+  mistakes:{name:"Retry my mistakes", desc:"Questions you've got wrong before, until you get them right.", ico:"↺", g:""}
 };
 const SUM_IDS = CALCS.map(c=>c.id).filter(id=>GEN[id]);
 function buildQuiz(type, opt){
   let qs=[], title="";
   if (type==="sums"){ qs=sumsFor(10, SUM_IDS); }
   else if (type==="which"){ qs=shuffle(BANK).slice(0,10).map(makeMcq); }
-  else if (type==="mixed"){ qs=shuffle(sumsFor(5, SUM_IDS).concat(shuffle(BANK).slice(0,5).map(makeMcq))); }
+  else if (type==="mixed"){ qs=shuffle(sumsFor(3, SUM_IDS).concat(sumsFor(2, LOOK_IDS, true), shuffle(BANK).slice(0,5).map(makeMcq))); }
+  else if (type==="lookup"){ qs=sumsFor(10, LOOK_IDS, true); }
   else if (type==="mistakes"){
     qs=shuffle(DATA.mistakes.mcq.map(MCQ_BY_ID).filter(Boolean).map(makeMcq)
       .concat(DATA.mistakes.sum.filter(id=>GEN[id]).map(makeSum).filter(Boolean))).slice(0,15);
   }
   else if (type==="topic"){ const c=CALC(opt); title=c.title;
-    qs=shuffle(sumsFor(4,[opt]).concat(shuffle(BANK.filter(m=>m.topic===opt)).slice(0,4).map(makeMcq))); }
+    qs=shuffle(sumsFor(2,[opt]).concat(sumsFor(2,[opt],!!GENL[opt]), shuffle(BANK.filter(m=>m.topic===opt)).slice(0,4).map(makeMcq))); }
   else if (type==="retry"){ title="Retry: the ones you missed";
-    qs=shuffle(opt.map(q=>q.kind==="mcq" ? (MCQ_BY_ID(q.id) ? makeMcq(MCQ_BY_ID(q.id)) : null) : makeSum(q.topic)).filter(Boolean)); }
+    qs=shuffle(opt.map(q=>q.kind==="mcq" ? (MCQ_BY_ID(q.id) ? makeMcq(MCQ_BY_ID(q.id)) : null) : makeSum(q.topic, q.look)).filter(Boolean)); }
   if (!title) title = QUIZZES[type] ? QUIZZES[type].name : "Quiz";
-  const src = type==="retry" ? opt.map(q=>({kind:q.kind, id:q.id, topic:q.topic})) : null;
+  const src = type==="retry" ? opt.map(q=>({kind:q.kind, id:q.id, topic:q.topic, look:!!q.look})) : null;
   return {type, opt: type==="retry" ? null : (opt||null), src, title, qs, i:0, answers:[], started:new Date().toISOString(), done:false};
 }
 function startQuiz(type,opt){
@@ -1215,8 +1310,43 @@ function recordAnswer(q, ok){
   if (!ok && at<0) list.push(key);
 }
 
+/* ---------- look-up tables ---------- */
+const TABLES = Array.isArray(window.TABLES) ? window.TABLES : [];
+const TABLE = id=>TABLES.find(t=>t.id===id);
+const BOOK = {BS:"BS 7671", OSG:"On-Site Guide", GN3:"GN3", GEN:"Maths"};
+const BOOK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20v3H6.5"/></svg>`;
+const whereHTML = t=>t.where.map(([b,r])=>`<span class="where"><span class="book b-${b}">${BOOK[b]||b}</span><span>${esc(r)}</span></span>`).join("");
+const partsHTML = t=>t.parts.map(p=>`${p.cap?`<p class="tcap">${esc(p.cap)}</p>`:""}<div class="scroll"><table class="ref data"><thead><tr>${p.cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${p.rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join("");
+const tableRef = t=>t.where.filter(w=>w[0]!=="GEN").slice(0,1).map(([b,r])=>`${BOOK[b]} ${r}`).join("") || "General maths";
+function lookupsHTML(ids){
+  return `<div class="lookups">${ids.map(TABLE).filter(Boolean).map(t=>`<details class="explain lookup"><summary><span><span class="lk">${BOOK_ICON} Look it up</span>${esc(t.title)}<small>${esc(tableRef(t))}</small></span></summary><div class="body"><div class="wheres">${whereHTML(t)}</div>${partsHTML(t)}${t.note?`<p class="tnote">${esc(t.note)}</p>`:""}</div></details>`).join("")}</div>`;
+}
+// tap a row to highlight it, like running a finger along the table
+document.addEventListener("click", e=>{ const tr=e.target.closest("table.data tbody tr"); if (tr) tr.classList.toggle("hl"); });
+
+function renderTables(focus){
+  setPage("", "Tables");
+  if (focus){ $("#back").hidden=false; $("#back").textContent="‹ Back"; }
+  let html = `<div class="calc-hero"><span class="chip">Tables</span><h2>Look-up tables</h2><p class="lede">The numbers you'd normally look up in the books, with exactly where to find each one. Learn where they live: at college, in exams and on site you'll be using the real books.</p></div>
+  <div class="books"><p class="tcap" style="margin-top:0">The books</p>
+    <div class="book-row"><span class="book b-BS">BS 7671</span><span><b>The IET Wiring Regulations.</b> Tables are numbered by chapter: Table 41.3 is in Chapter 41, Table 54.4 in Chapter 54. The cable tables are in Appendix 4.</span></div>
+    <div class="book-row"><span class="book b-OSG">On-Site Guide</span><span><b>The IET On-Site Guide.</b> The pocket guide for everyday installs. Conductor resistances (Appendix I), max measured Zs (Appendix B) and typical supply values (section 1.1).</span></div>
+    <div class="book-row"><span class="book b-GN3">GN3</span><span><b>IET Guidance Note 3: Inspection &amp; Testing.</b> How to do each test, plus resistance and Zs tables (Appendix B).</span></div>
+    <p class="tnote">Values here follow BS 7671:2018 (18th Edition). Appendix and table numbers can move between editions and printings, so check against the books your college uses.</p></div>
+  <div class="topics jump">${TABLES.map(t=>`<a class="topic" href="#/tables/${t.id}">${esc(t.title)}</a>`).join("")}</div>`;
+  html += TABLES.map(t=>{
+    const used = t.used.map(CALC).filter(Boolean);
+    return `<section class="tcard" id="t-${t.id}"><h3>${esc(t.title)}</h3><p class="twhat">${esc(t.what)}</p>
+      <div class="wheres"><span class="wl">Find it in</span>${whereHTML(t)}</div>${partsHTML(t)}${t.note?`<p class="tnote">${esc(t.note)}</p>`:""}
+      ${used.length?`<div class="used"><span class="wl">Used in</span>${used.map(c=>`<a class="topic g-${c.group}" href="#/${c.id}">${esc(c.title)}</a>`).join("")}</div>`:""}</section>`;
+  }).join("");
+  $("#app").innerHTML = html;
+  const el = focus && document.getElementById("t-"+focus);
+  if (el){ el.scrollIntoView(); el.classList.add("flash"); } else window.scrollTo(0,0);
+}
+
 /* ---------- quiz: screens ---------- */
-const CAT_NAME = {test:"Which test?", sum:"Which sum?", site:"On site"};
+const CAT_NAME = {test:"Which test?", sum:"Which sum?", site:"Know your values", where:"Where to find it"};
 const pct = (s,t)=>t?Math.round(s/t*100):0;
 const bestFor = type=>DATA.attempts.filter(a=>a.type===type).reduce((b,a)=>Math.max(b,pct(a.score,a.total)),-1);
 const when = iso=>{ const d=new Date(iso); return d.toLocaleDateString("en-GB",{day:"numeric",month:"short"})+", "+d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}); };
@@ -1268,7 +1398,7 @@ function renderQuizPlay(){
     if (a) html += `<div class="verdict ${a.ok?"pass":"fail"} feedback why"><span class="big">${a.ok?"Correct ⚡":"Not this time"}</span>${esc(m.why)}</div>`;
     html += `</div>`;
   } else {
-    html += `<div class="qbox"><span class="chip">Sum · ${c?esc(c.title):""}</span><p class="qt">${q.text}</p>
+    html += `<div class="qbox"><span class="chip">${q.look?"Table lookup":"Sum"} · ${c?esc(c.title):""}</span><p class="qt">${q.text}</p>${q.tables?lookupsHTML(q.tables):""}
       <div class="attempt"><label for="qa" class="lbl2">Your answer (${q.ans.unit})</label><div class="row"><input id="qa" type="text" inputmode="decimal" autocomplete="off" value="${a?esc(a.given):""}"${a?" disabled":""}>${a?"":`<button class="btn" id="qcheck" type="button">Check</button>`}</div>${a?"":`<button class="btn ghost" id="qshow" type="button">Show me how</button>`}</div>`;
     if (a){
       const hint = a.ok||a.given===""||!Number.isFinite(num(a.given)) ? "" : slipHint(num(a.given), q.ans.value);
@@ -1312,7 +1442,7 @@ function finishQuiz(){
   const prevBest = Z.type==="topic"||Z.type==="retry"||Z.type==="mistakes" ? -1 : bestFor(Z.type);
   Z.done=true; Z.finished=new Date().toISOString(); Z.newBest = prevBest>=0 && pct(score,total)>prevBest;
   DATA.attempts.push({at:Z.finished, type:Z.type, opt:Z.opt, title:Z.title, score, total,
-    missed:Z.qs.map((q,j)=>Z.answers[j]&&Z.answers[j].ok?null:{kind:q.kind,id:q.id,topic:q.topic}).filter(Boolean)});
+    missed:Z.qs.map((q,j)=>Z.answers[j]&&Z.answers[j].ok?null:{kind:q.kind,id:q.id,topic:q.topic,look:!!q.look}).filter(Boolean)});
   if (DATA.attempts.length>200) DATA.attempts=DATA.attempts.slice(-200);
   save(); location.hash="#/quiz/results";
 }
@@ -1435,14 +1565,16 @@ function whatsNew(){
 function setTab(t){ document.querySelectorAll(".tabbar a").forEach(a=>{ if (a.dataset.tab===t) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); }); }
 function route(){
   const h = location.hash.replace(/^#\/?/, "");
-  setTab(h.startsWith("quiz") ? "quiz" : h==="progress" ? "progress" : "learn");
+  setTab(h.startsWith("quiz") ? "quiz" : h==="progress" ? "progress" : h.startsWith("tables") ? "tables" : "learn");
+  $("#back").textContent = "‹ All sums";
   if (h==="quiz") renderQuizMenu();
   else if (h==="quiz/play") renderQuizPlay();
   else if (h==="quiz/results") renderResults();
   else if (h==="progress") renderProgress();
+  else if (h==="tables" || h.startsWith("tables/")) renderTables(h.split("/")[1]);
   else { const c = CALCS.find(x=>x.id===h); if (c) renderCalc(c); else renderHome(); }
 }
-$("#back").addEventListener("click", ()=>{ location.hash = ""; });
+$("#back").addEventListener("click", ()=>{ if (location.hash.startsWith("#/tables/") && history.length>1) history.back(); else location.hash = ""; });
 window.addEventListener("hashchange", route);
 route();
 whatsNew();
