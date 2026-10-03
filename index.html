@@ -19,7 +19,7 @@
 <style>
 :root{
   --bg:#0B0E14; --bg2:#0F131B; --surface:#141924; --surface2:#1B2230; --ink:#EEF2F8; --muted:#97A2B6; --line:#263042;
-  --volt:#FFD60A; --cyan:#3DD6F5; --hot:#FF7A45; --lime:#9BE15D;
+  --volt:#FFD60A; --cyan:#3DD6F5; --hot:#FF7A45; --lime:#9BE15D; --violet:#B99BFF;
   --link:#3DD6F5; --onacc:#0B0E14;
   --pass:#4ADE80; --passbg:#0F2A1B; --fail:#FF7B7B; --failbg:#2E1416; --info:#3DD6F5; --infobg:#0E2530;
   --key:#232B3A; --keyink:#EEF2F8; --keyedge:#0A0D13; --opkey:#323C50; --opink:#EEF2F8;
@@ -36,7 +36,7 @@
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
     --bg:#F3F4EF; --bg2:#ECEEE7; --surface:#FFFFFF; --surface2:#F4F6F1; --ink:#0D1117; --muted:#4F5968; --line:#DADFE4;
-    --volt:#FFCC00; --cyan:#0C8FB5; --hot:#E2531A; --lime:#4C9A1F;
+    --volt:#FFCC00; --cyan:#0C8FB5; --hot:#E2531A; --lime:#4C9A1F; --violet:#8B5CF6;
     --link:#0A6E8A; --onacc:#0D1117;
     --pass:#1B7F42; --passbg:#E2F5E8; --fail:#C02626; --failbg:#FDE8E8; --info:#0A6E8A; --infobg:#E1F2F7;
     --key:#2A3140; --keyink:#F4F6F8; --keyedge:#10141B; --opkey:#DDE2E9; --opink:#0D1117;
@@ -45,7 +45,7 @@
 }
 :root[data-theme="light"]{
   --bg:#F3F4EF; --bg2:#ECEEE7; --surface:#FFFFFF; --surface2:#F4F6F1; --ink:#0D1117; --muted:#4F5968; --line:#DADFE4;
-  --volt:#FFCC00; --cyan:#0C8FB5; --hot:#E2531A; --lime:#4C9A1F;
+  --volt:#FFCC00; --cyan:#0C8FB5; --hot:#E2531A; --lime:#4C9A1F; --violet:#8B5CF6;
   --link:#0A6E8A; --onacc:#0D1117;
   --pass:#1B7F42; --passbg:#E2F5E8; --fail:#C02626; --failbg:#FDE8E8; --info:#0A6E8A; --infobg:#E1F2F7;
   --key:#2A3140; --keyink:#F4F6F8; --keyedge:#10141B; --opkey:#DDE2E9; --opink:#0D1117;
@@ -60,7 +60,7 @@ button,input,select{font:inherit;color:inherit}
 a{color:var(--link)}
 
 /* Accent per section */
-.g-basics{--acc:var(--volt)} .g-dead{--acc:var(--cyan)} .g-live{--acc:var(--hot)} .g-design{--acc:var(--lime)}
+.g-basics{--acc:var(--volt)} .g-dead{--acc:var(--cyan)} .g-live{--acc:var(--hot)} .g-design{--acc:var(--lime)} .g-science{--acc:var(--violet)}
 
 /* Header */
 .hazard{height:6px;background:repeating-linear-gradient(-45deg,var(--volt) 0 12px,#0B0E14 12px 24px)}
@@ -440,13 +440,8 @@ const RES = {"1":18.10,"1.5":12.10,"2.5":7.41,"4":4.61,"6":3.08,"10":1.83,"16":1
 const SIZES = ["1","1.5","2.5","4","6","10","16"];
 // Flat twin & earth, 70°C thermoplastic, BS 7671 Table 4D5
 const MVAM = {"1":44,"1.5":29,"2.5":18,"4":11,"6":7.3,"10":4.4,"16":2.8};
-const IT = {
-  C:   {"1":16,"1.5":20,"2.5":27,"4":37,"6":47,"10":64,"16":85},
-  "100":{"1":13,"1.5":16,"2.5":21,"4":27,"6":34,"10":45,"16":57},
-  "103":{"1":8,"1.5":10,"2.5":13.5,"4":17.5,"6":23.5,"10":32,"16":42.5}
-};
-const METHOD_NAMES = {C:"Method C — clipped direct to a surface", "100":"Method 100 — above a plasterboard ceiling, insulation up to 100 mm", "103":"Method 103 — in a stud wall with insulation, not touching the inner wall"};
 const MULT = {B:5, C:10, D:20};
+const CABLE_DATA = window.CABLE_DATA, CA_DATA = window.CA_DATA, CG_DATA = window.CG_DATA, TE_R12 = window.TE_R12;
 const RATINGS = [6,10,16,20,25,32,40,50,63];
 
 const sizeOpts = SIZES.map(s => ({v:s, l:s + " mm²"}));
@@ -772,103 +767,112 @@ const CALCS = [
 /* 7 VD */
 {
   id:"vd", group:"design", title:"Voltage drop", short:"How much voltage the cable loses", fshort:"mV/A/m × Ib × L",
-  lede:"Work out how many volts are lost along a cable and check it's within the limit.",
+  lede:"Work out how many volts are lost along a cable and check it's within the limit. Works for single and three-phase.",
   formula:[`VD = (mV/A/m × I<sub>b</sub> × L) ÷ 1000`],
   words:"Table value times current times length, divided by 1000 to turn millivolts into volts.",
-  what:`<p>Every cable has some resistance, so some voltage is lost along it. The longer the cable and the more current it carries, the more it loses.</p><p>The tables give a figure in millivolts per amp per metre (mV/A/m). Multiply by the current and the length and you get the drop in millivolts.</p>`,
+  what:`<p>Every cable has some resistance, so some voltage is lost along it. The longer the cable and the more current it carries, the more it loses.</p><p>The tables give a figure in millivolts per amp per metre (mV/A/m). Multiply by the current and the length and you get the drop in millivolts.</p><p>For three-phase, use the three-phase mV/A/m column and compare the answer with a percentage of 400 V.</p>`,
   why:`<p>Equipment at the end of a long cable gets less voltage than it should. Lights dim, motors struggle and run hot. BS 7671 limits the drop to 3% for lighting and 5% for everything else (on a public supply).</p>`,
   sources:[
-    ["tables","mV/A/m: BS 7671 Appendix 4 for the cable type. This calculator uses Table 4D5 (flat twin and earth)."],
-    ["design","Ib, the design current: from the load. Use the Ohm's law sum: Ib = P ÷ V."],
+    ["tables","mV/A/m: BS 7671 Appendix 4, the voltage drop table for the cable type (4D5 for twin and earth, 4D1B singles, 4D2B multicore, 4E4B XLPE SWA)."],
+    ["design","Ib, the design current: from the load. Single-phase Ib = P ÷ V. Three-phase: use the three-phase power sum."],
     ["design","Length: from the drawings, in metres. One way only. The table already allows for the return conductor."],
-    ["tables","Limits: Appendix 4, section 6.4. 3% lighting = 6.9 V, 5% other = 11.5 V."]
+    ["tables","Limits: Appendix 4, Table 4Ab. 3% lighting, 5% other. 230 V gives 6.9 V and 11.5 V; 400 V gives 12 V and 20 V."]
   ],
   inputs:[
-    {id:"size", label:"Cable size (twin and earth)", type:"select", opts:SIZES.map(s=>({v:s,l:`${s} mm² — ${MVAM[s]} mV/A/m`})), def:"2.5"},
+    {id:"cable", label:"Cable type", type:"select", def:"te", refresh:true, opts:()=>Object.keys(CABLE_DATA).map(k=>({v:k,l:CABLE_DATA[k].name}))},
+    {id:"phase", label:"Supply", type:"select", def:"1", refresh:true, opts:st=>CABLE_DATA[st.cable].phases.map(p=>({v:p,l:p==="1"?"Single-phase (230 V)":"Three-phase (400 V)"}))},
+    {id:"size", label:"Cable size", type:"select", def:"2.5", opts:st=>{ const d=CABLE_DATA[st.cable], ph=d.phases.includes(st.phase)?st.phase:"1"; return d.sizes.map((s,i)=>({v:s,l:`${s} mm² — ${d.mv[ph][i]} mV/A/m`})); }},
     {id:"ib", label:"Design current Ib", unit:"A", def:"20"},
     {id:"L", label:"Length (one way)", unit:"m", def:"25"},
-    {id:"kind", label:"Circuit type", type:"select", def:"5", opts:[{v:"3",l:"Lighting — 3% (6.9 V)"},{v:"5",l:"Other uses — 5% (11.5 V)"}]}
+    {id:"kind", label:"Circuit type", type:"select", def:"5", opts:[{v:"3",l:"Lighting — 3%"},{v:"5",l:"Other uses — 5%"}]}
   ],
   compute(v){
     if (!(v.ib>0)||!(v.L>0)) return {error:"Enter the design current and the length."};
-    const mv=MVAM[v.size], vd=mv*v.ib*v.L/1000, pct=vd/230*100, lim=num(v.kind), limV=230*lim/100;
+    const d=CABLE_DATA[v.cable]||CABLE_DATA.te, ph=d.phases.includes(v.phase)?v.phase:"1", i=d.sizes.indexOf(v.size);
+    if (i<0) return {error:"Pick a cable size."};
+    const mv=d.mv[ph][i], vd=mv*v.ib*v.L/1000, U=ph==="3"?400:230, pct=vd/U*100, lim=num(v.kind), limV=U*lim/100;
     const steps=[
-      `Look up mV/A/m for ${v.size} mm² twin and earth: <b>${mv}</b>.`,
+      `Look up mV/A/m for ${v.size} mm² ${d.short} (${ph==="3"?"three-phase":"single-phase"}), ${d.ref}: <b>${mv}</b>.`,
       `Multiply: ${mv} × ${tidy(v.ib)} × ${tidy(v.L)} = <b>${fx(mv*v.ib*v.L,0)} mV</b>.`,
       `Divide by 1000 to get volts: <b>${fx(vd,2)} V</b>.`,
-      `As a percentage of 230 V: ${fx(vd,2)} ÷ 230 × 100 = <b>${fx(pct,1)}%</b>.`,
-      `The limit is ${lim}% = 230 × ${lim} ÷ 100 = <b>${fx(limV,1)} V</b>.`
+      `As a percentage of ${U} V: ${fx(vd,2)} ÷ ${U} × 100 = <b>${fx(pct,1)}%</b>.`,
+      `The limit is ${lim}% of ${U} V = <b>${fx(limV,1)} V</b>.`
     ];
     const checks=[ vd<=limV
       ? {type:"pass", text:`<b>${fx(vd,2)} V</b> (${fx(pct,1)}%) is within the ${fx(limV,1)} V limit.`}
       : {type:"fail", text:`<b>${fx(vd,2)} V</b> (${fx(pct,1)}%) is over the ${fx(limV,1)} V limit. Use a bigger cable or shorten the run.`}];
     if (vd>limV){
-      const ok=SIZES.find(s=>MVAM[s]*v.ib*v.L/1000<=limV);
-      if (ok) checks.push({type:"info", text:`The smallest twin and earth that meets the limit here is <b>${ok} mm²</b> (${fx(MVAM[ok]*v.ib*v.L/1000,2)} V). Check it still meets the current rating too.`});
+      const j=d.sizes.findIndex((s,k)=>d.mv[ph][k]*v.ib*v.L/1000<=limV);
+      if (j>=0) checks.push({type:"info", text:`The smallest ${d.short} that meets the limit here is <b>${d.sizes[j]} mm²</b> (${fx(d.mv[ph][j]*v.ib*v.L/1000,2)} V). Check it still meets the current rating too.`});
     }
-    return {answer:{label:"Voltage drop", value:vd, unit:"V", dp:2, extra:`= <b>${fx(pct,1)}%</b> of 230 V`}, steps, keys:[{cap:"Voltage drop in volts", seq:[String(mv),"×",tidy(v.ib),"×",tidy(v.L),"÷","1000","="]},{cap:"As a percentage", seq:["Ans","÷","230","×","100","="]}], checks};
+    return {answer:{label:"Voltage drop", value:vd, unit:"V", dp:2, extra:`= <b>${fx(pct,1)}%</b> of ${U} V`}, steps, keys:[{cap:"Voltage drop in volts", seq:[String(mv),"×",tidy(v.ib),"×",tidy(v.L),"÷","1000","="]},{cap:"As a percentage", seq:["Ans","÷",String(U),"×","100","="]}], checks};
   },
   tips:[
     "Use the one-way length. The table value already includes going there and back.",
-    "Some colleges give the drop per metre as a single figure for the circuit. It's the same sum.",
+    "Three-phase: use the three-phase mV/A/m and 400 V. Mixing them up is a common mistake.",
     "A cable can pass on current rating but fail on voltage drop if it's a long run. Always check both.",
-    "To find the maximum length: L = (allowed mV) ÷ (mV/A/m × Ib)."
+    "To find the maximum length: L = (allowed mV) ÷ (mV/A/m × Ib). The maximum length calculator does this for you."
   ]
 },
 
 /* 8 CABLE */
 {
-  id:"cable", group:"design", title:"Cable sizing with correction factors", short:"Ib ≤ In ≤ Iz and the factors that reduce it", fshort:"It ≥ In ÷ factors",
-  lede:"Work out the minimum current rating a cable needs from the table, once you allow for how it's installed.",
+  id:"cable", group:"design", title:"Cable sizing with correction factors", short:"Ib ≤ In ≤ Iz for any cable and installation method", fshort:"It ≥ In ÷ factors",
+  lede:"Pick the cable type, how it's installed and the conditions. The calculator finds the minimum table rating and the smallest cable that will do.",
   formula:[`I<sub>b</sub> ≤ I<sub>n</sub> ≤ I<sub>z</sub>`,`I<sub>t</sub> ≥ I<sub>n</sub> ÷ (C<sub>a</sub> × C<sub>g</sub> × C<sub>i</sub> × C<sub>c</sub>)`],
   words:"Design current must not exceed the breaker, and the breaker must not exceed what the cable can carry. Divide the breaker rating by the correction factors to find the table rating you need.",
-  what:`<p>Three currents matter. I<sub>b</sub> is what the load draws. I<sub>n</sub> is the breaker rating. I<sub>z</sub> is what the cable can actually carry where it's installed. They must go in that order: I<sub>b</sub> ≤ I<sub>n</sub> ≤ I<sub>z</sub>.</p><p>The tables give a rating (I<sub>t</sub>) for ideal conditions. Correction factors reduce it for real conditions. So you divide I<sub>n</sub> by the factors to find the table rating you need to look for.</p>`,
+  what:`<p>Three currents matter. I<sub>b</sub> is what the load draws. I<sub>n</sub> is the breaker rating. I<sub>z</sub> is what the cable can actually carry where it's installed. They must go in that order: I<sub>b</sub> ≤ I<sub>n</sub> ≤ I<sub>z</sub>.</p><p>The tables give a rating (I<sub>t</sub>) for ideal conditions and a particular installation method. Correction factors reduce it for real conditions. So you divide I<sub>n</sub> by the factors to find the table rating you need to look for.</p><p>Each cable type has its own table in BS 7671 Appendix 4, with a column for each installation method and for single or three-phase.</p>`,
   why:`<p>Cable gets rid of heat through its surface. Wrap it in insulation, bunch it with other cables, or run it somewhere hot, and it can't cool down. If it carries its normal current anyway, the insulation overheats and breaks down. The factors make sure the cable is big enough for where it actually goes.</p>`,
   sources:[
-    ["design","Ib: from the load (P ÷ V). In: the breaker you choose, at least Ib."],
-    ["tables","Ca, ambient temperature: BS 7671 Table 4B1. 30°C is the reference (factor 1.00)."],
-    ["tables","Cg, grouping: Table 4C1. Applies when cables are bunched together."],
+    ["design","Ib: from the load (P ÷ V, or the three-phase sum). In: the breaker you choose, at least Ib."],
+    ["tables","Installation method: BS 7671 Appendix 4, Table 4A2. Clipped direct is Method C."],
+    ["tables","Ca, ambient temperature: Table 4B1. 30°C is the reference (factor 1.00). Use the column for the cable's insulation."],
+    ["tables","Cg, grouping: Table 4C1. Applies when circuits are bunched together."],
     ["tables","Ci, thermal insulation: Table 52.2. Applies when the cable runs through insulation."],
     ["tables","Cc: 0.725 only for rewireable (BS 3036) fuses. Otherwise 1."],
-    ["tables","It: Table 4D5 for twin and earth, under the right installation method."]
+    ["tables","It: the current rating table for the cable type (4D5 twin and earth, 4D1A singles, 4D2A multicore, 4E4A XLPE SWA)."]
   ],
   inputs:[
     {id:"ib", label:"Design current Ib", unit:"A", def:"26"},
     {id:"In", label:"Breaker rating In", type:"select", def:"32", opts:RATINGS.map(r=>({v:String(r),l:r+" A"}))},
-    {id:"ca", label:"Ca — ambient temperature", type:"select", def:"1", opts:[{v:"1.03",l:"25°C — 1.03"},{v:"1",l:"30°C — 1.00"},{v:"0.94",l:"35°C — 0.94"},{v:"0.87",l:"40°C — 0.87"},{v:"0.79",l:"45°C — 0.79"},{v:"0.71",l:"50°C — 0.71"}]},
-    {id:"cg", label:"Cg — grouping (circuits bunched)", type:"select", def:"0.8", opts:[{v:"1",l:"1 circuit — 1.00"},{v:"0.8",l:"2 circuits — 0.80"},{v:"0.7",l:"3 circuits — 0.70"},{v:"0.65",l:"4 circuits — 0.65"},{v:"0.6",l:"5 circuits — 0.60"},{v:"0.57",l:"6 circuits — 0.57"}]},
-    {id:"ci", label:"Ci — length surrounded by insulation", type:"select", def:"1", opts:[{v:"1",l:"None — 1.00"},{v:"0.88",l:"50 mm — 0.88"},{v:"0.78",l:"100 mm — 0.78"},{v:"0.63",l:"200 mm — 0.63"},{v:"0.51",l:"400 mm — 0.51"},{v:"0.5",l:"500 mm or more — 0.50"}]},
-    {id:"cc", label:"Cc — protective device", type:"select", def:"1", opts:[{v:"1",l:"MCB, RCBO or cartridge fuse — 1.00"},{v:"0.725",l:"Rewireable BS 3036 fuse — 0.725"}]},
-    {id:"method", label:"Installation method (for the table lookup)", type:"select", def:"C", opts:Object.keys(METHOD_NAMES).map(k=>({v:k,l:METHOD_NAMES[k]}))}
+    {id:"cable", label:"Cable type", type:"select", def:"te", refresh:true, opts:()=>Object.keys(CABLE_DATA).map(k=>({v:k,l:CABLE_DATA[k].name}))},
+    {id:"phase", label:"Supply", type:"select", def:"1", opts:st=>CABLE_DATA[st.cable].phases.map(p=>({v:p,l:p==="1"?"Single-phase":"Three-phase"}))},
+    {id:"method", label:"Installation method", type:"select", def:"C", opts:st=>{ const d=CABLE_DATA[st.cable]; return Object.keys(d.methods).map(m=>({v:m,l:d.methods[m].name})); }},
+    {id:"temp", label:"Ambient temperature (gives Ca)", type:"select", def:"30", opts:st=>{ const ins=CABLE_DATA[st.cable].insul; return [25,30,35,40,45,50].map(t=>({v:String(t),l:`${t}°C — Ca ${CA_DATA[ins][t].toFixed(2)}`})); }},
+    {id:"arr", label:"How the circuits are grouped", type:"select", def:"bunched", opts:[{v:"bunched",l:"Bunched, enclosed or embedded"},{v:"layer",l:"Single layer on a wall, touching"}]},
+    {id:"n", label:"Number of circuits grouped together (gives Cg)", type:"select", def:"2", opts:st=>[1,2,3,4,5,6,7,8,9].map(n=>({v:String(n),l:`${n} — Cg ${CG_DATA[st.arr==="layer"?"layer":"bunched"][n-1].toFixed(2)}`}))},
+    {id:"ci", label:"Ci — length surrounded by insulation", type:"select", def:"1", opts:[{v:"1",l:"None — 1.00"},{v:"0.88",l:"50 mm — 0.88"},{v:"0.78",l:"100 mm — 0.78"},{v:"0.63",l:"200 mm — 0.63"},{v:"0.51",l:"400 mm — 0.51"},{v:"0.5",l:"500 mm or more — 0.50"}], hint:"Leave at None if you picked Method 100 to 103: they already allow for the insulation."},
+    {id:"cc", label:"Cc — protective device", type:"select", def:"1", opts:[{v:"1",l:"MCB, RCBO or cartridge fuse — 1.00"},{v:"0.725",l:"Rewireable BS 3036 fuse — 0.725"}]}
   ],
   compute(v){
     if (!(v.ib>0)) return {error:"Enter the design current Ib."};
-    const In=num(v.In), f=[v.ca,v.cg,v.ci,v.cc].map(num), prod=f.reduce((a,b)=>a*b,1), It=In/prod;
-    const tab=IT[v.method], pick=SIZES.find(s=>tab[s]>=It);
+    const d=CABLE_DATA[v.cable]||CABLE_DATA.te, ph=d.phases.includes(v.phase)?v.phase:"1", m=d.methods[v.method]?v.method:Object.keys(d.methods)[0];
+    const ca=CA_DATA[d.insul][num(v.temp)]||1, cg=CG_DATA[v.arr==="layer"?"layer":"bunched"][(num(v.n)||1)-1];
+    const In=num(v.In), f=[ca,cg,num(v.ci),num(v.cc)], prod=f.reduce((a,b)=>a*b,1), It=In/prod;
+    const col=d.methods[m][ph], idx=col.findIndex(x=>x>=It), pick=idx>=0?d.sizes[idx]:null;
     const steps=[
       `Check I<sub>b</sub> ≤ I<sub>n</sub>: ${tidy(v.ib)} A ${v.ib<=In?"≤":">"} ${In} A ${v.ib<=In?"✓":"✗"}`,
-      `Multiply the factors together: ${f.map(tidy).join(" × ")} = <b>${fx(prod,3)}</b>.`,
+      `Look up the factors: C<sub>a</sub> = ${tidy(ca)} (${v.temp}°C, Table 4B1), C<sub>g</sub> = ${tidy(cg)} (${v.n} circuit${v.n==="1"?"":"s"}, Table 4C1), C<sub>i</sub> = ${tidy(num(v.ci))}, C<sub>c</sub> = ${tidy(num(v.cc))}.`,
+      `Multiply them together: ${f.map(tidy).join(" × ")} = <b>${fx(prod,3)}</b>.`,
       `Divide the breaker rating by that: ${In} ÷ ${fx(prod,3)} = <b>${fx(It,1)} A</b>. This is the minimum I<sub>t</sub> to look for in the table.`,
-      pick ? `Look down Table 4D5 (${METHOD_NAMES[v.method].split(" — ")[0]}) for the first cable rated at least ${fx(It,1)} A: <b>${pick} mm²</b> at ${tab[pick]} A.`
-           : `No twin and earth up to 16 mm² is big enough under this method. Change the method or the cable type.`,
-      pick ? `Actual I<sub>z</sub> once installed: ${tab[pick]} × ${fx(prod,3)} = <b>${fx(tab[pick]*prod,1)} A</b>, which is ≥ ${In} A ✓` : ""
+      pick ? `Look down ${d.ref}, ${d.methods[m].name.replace(/:.*/,"")}${d.phases.length>1?(ph==="3"?", three-phase":", single-phase"):""}, for the first cable rated at least ${fx(It,1)} A: <b>${pick} mm²</b> at ${col[idx]} A.`
+           : `No ${d.short} up to ${d.sizes[d.sizes.length-1]} mm² in this app is big enough under this method. Check the full table, or change the method or cable type.`,
+      pick ? `Actual I<sub>z</sub> once installed: ${col[idx]} × ${fx(prod,3)} = <b>${fx(col[idx]*prod,1)} A</b>, which is ≥ ${In} A ✓` : ""
     ].filter(Boolean);
     const checks=[];
     if (v.ib>In) checks.push({type:"fail", text:`I<sub>b</sub> (${tidy(v.ib)} A) is bigger than the breaker (${In} A). Choose a bigger breaker first.`});
-    if (pick) checks.push({type:"pass", text:`Use at least <b>${pick} mm²</b> twin and earth. Now check voltage drop and Zs for the same cable.`});
-    else checks.push({type:"fail", text:"Nothing in the twin and earth table is big enough for these conditions."});
-    checks.push({type:"info", text:"Ratings in this app are for flat twin and earth (Table 4D5) and a few common methods. Check against your copy of BS 7671 or the On-Site Guide."});
-    return {answer:{label:"Minimum tabulated rating It", value:It, unit:"A", dp:1, extra: pick?`Smallest suitable cable: <b>${pick} mm²</b>`:""}, steps, keys:[{cap:"Minimum It", seq:[String(In),"÷","(",...f.flatMap((x,i)=>i?["×",tidy(x)]:[tidy(x)]),")","="]}], checks};
+    if (pick) checks.push({type:"pass", text:`Use at least <b>${pick} mm²</b> ${d.short}. Now check voltage drop and Zs for the same cable.`});
+    else checks.push({type:"fail", text:`Nothing up to ${d.sizes[d.sizes.length-1]} mm² is big enough for these conditions.`});
+    if (/^10[0-3]$/.test(m) && num(v.ci)<1) checks.push({type:"info", text:"Methods 100 to 103 already allow for thermal insulation, so you normally wouldn't apply Ci as well."});
+    return {answer:{label:"Minimum tabulated rating It", value:It, unit:"A", dp:1, extra: pick?`Smallest suitable cable: <b>${pick} mm²</b>`:""}, pick, steps, keys:[{cap:"Minimum It", seq:[String(In),"÷","(",...f.flatMap((x,i)=>i?["×",tidy(x)]:[tidy(x)]),")","="]}], checks};
   },
   tips:[
     "Factors are all 1 or less. Dividing by them makes the number bigger, which is right: you need a bigger cable.",
     "Only use the factors that apply. If the cable is clipped on its own in a 30°C room, they're all 1.",
     "Use In (the breaker), not Ib, when dividing by the factors. That's what protects the cable.",
+    "XLPE SWA runs at 90°C, so it uses a different Ca column and carries more current than PVC of the same size.",
     "After sizing, always check voltage drop and Zs for the cable you've picked."
-  ],
-  extraRef(){
-    return `<div class="scroll"><table class="ref"><thead><tr><th>Size</th><th>Method C</th><th>Method 100</th><th>Method 103</th></tr></thead><tbody>${SIZES.map(s=>`<tr><td>${s} mm²</td><td>${IT.C[s]} A</td><td>${IT["100"][s]} A</td><td>${IT["103"][s]} A</td></tr>`).join("")}</tbody></table></div><p class="hint" style="color:var(--muted);font-size:.85rem">Twin and earth, 70°C thermoplastic, from BS 7671 Table 4D5. Check against your own copy.</p>`;
-  }
+  ]
 },
 
 /* 9 ADIABATIC */
@@ -912,6 +916,338 @@ const CALCS = [
     "Use the fault current at the far end of the circuit (the lowest), because that's where disconnection is slowest.",
     "S is in mm². Compare it with the CPC size, not the line conductor."
   ]
+},
+
+/* 10 SERIES / PARALLEL */
+{
+  id:"series", group:"basics", title:"Series and parallel resistance", short:"Adding up resistances in a circuit", fshort:"Rt = R1 + R2",
+  lede:"Enter up to four resistances. Pick series or parallel. Add a voltage to see the current too.",
+  formula:[`Series: R<sub>t</sub> = R<sub>1</sub> + R<sub>2</sub> + R<sub>3</sub>`,`Parallel: 1/R<sub>t</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub> + 1/R<sub>3</sub>`],
+  words:"In series, add them up. In parallel, add the reciprocals, then flip the answer back over.",
+  what:`<p><b>Series</b> means one after another, so the current has to go through every resistance. The total is just the sum, and it's always bigger than any one of them.</p><p><b>Parallel</b> means side by side, so the current has several paths. The total is always smaller than the smallest one.</p><p>In series the current is the same everywhere and the voltage splits up. In parallel the voltage is the same across each branch and the current splits up.</p>`,
+  why:`<p>It's how R<sub>1</sub>+R<sub>2</sub> works (the line and CPC are in series), why insulation resistance readings combine the way they do (circuits in parallel), and why a ring final reads a quarter of its end-to-end value. It also comes up in every electrical science exam.</p>`,
+  sources:[
+    ["tester","Resistances: measured with a multimeter or low-resistance ohmmeter, with the circuit isolated."],
+    ["design","Or from component markings, data sheets or the question."]
+  ],
+  inputs:[
+    {id:"mode", label:"How they're connected", type:"select", def:"series", opts:[{v:"series",l:"Series (one after another)"},{v:"parallel",l:"Parallel (side by side)"}]},
+    {id:"a", label:"R1", unit:"Ω", def:"10"},
+    {id:"b", label:"R2", unit:"Ω", def:"20"},
+    {id:"c", label:"R3", unit:"Ω", def:"30", hint:"Leave empty if not needed."},
+    {id:"d", label:"R4", unit:"Ω", def:"", hint:"Leave empty if not needed."},
+    {id:"V", label:"Supply voltage (optional)", unit:"V", def:"", hint:"Add one to work out the currents and voltages."}
+  ],
+  compute(v){
+    const rs=["a","b","c","d"].map(k=>v[k]).filter(Number.isFinite);
+    if (rs.length<2) return {error:"Enter at least two resistances."};
+    if (rs.some(r=>r<=0)) return {error:"Resistances must be above zero."};
+    const ser=v.mode!=="parallel", steps=[], keys=[];
+    let Rt;
+    if (ser){ Rt=rs.reduce((s,r)=>s+r,0); steps.push(`Add them up: ${rs.map(tidy).join(" + ")} = <b>${fx(Rt,2)} Ω</b>.`); keys.push({cap:"Total", seq:rs.flatMap((r,i)=>i?["+",tidy(r)]:[tidy(r)]).concat("=")}); }
+    else { const inv=rs.map(r=>1/r), s=inv.reduce((a,b)=>a+b,0); Rt=1/s;
+      steps.push(`Turn each into 1 ÷ R: ${rs.map(r=>`1 ÷ ${tidy(r)} = ${fx(1/r,4)}`).join(", ")}.`);
+      steps.push(`Add them: <b>${fx(s,4)}</b>.`, `Flip it back over: 1 ÷ ${fx(s,4)} = <b>${fx(Rt,2)} Ω</b>.`);
+      if (rs.length===2) steps.push(`Shortcut for two: (R1 × R2) ÷ (R1 + R2) = (${tidy(rs[0])} × ${tidy(rs[1])}) ÷ (${tidy(rs[0])} + ${tidy(rs[1])}) = ${fx(Rt,2)} Ω.`);
+      keys.push({cap:"Total, with the x⁻¹ key", seq:rs.flatMap((r,i)=>i?["+",tidy(r),"x⁻¹"]:[tidy(r),"x⁻¹"]).concat(["=","x⁻¹"])}); }
+    let extra="";
+    if (Number.isFinite(v.V) && v.V>0){ const I=v.V/Rt;
+      steps.push(`Total current: I = V ÷ R<sub>t</sub> = ${tidy(v.V)} ÷ ${fx(Rt,2)} = <b>${fx(I,3)} A</b>.`);
+      if (ser) steps.push(`Voltage across each (V = I × R): ${rs.map((r,i)=>`R${i+1} ${fx(I*r,2)} V`).join(", ")}. They add up to ${tidy(v.V)} V.`);
+      else steps.push(`Current through each (I = V ÷ R): ${rs.map((r,i)=>`R${i+1} ${fx(v.V/r,3)} A`).join(", ")}. They add up to ${fx(I,3)} A.`);
+      extra=`Total current: <b>${fx(I,3)} A</b>`;
+      keys.push({cap:"Total current", seq:[tidy(v.V),"÷","Ans","="]});
+    }
+    const checks=[{type:"info", text: ser ? `In series the total (${fx(Rt,2)} Ω) is bigger than the biggest single resistance (${tidy(Math.max(...rs))} Ω). It always is.` : `In parallel the total (${fx(Rt,2)} Ω) is smaller than the smallest single resistance (${tidy(Math.min(...rs))} Ω). It always is.`}];
+    return {answer:{label:"Total resistance Rt", value:Rt, unit:"Ω", dp:2, extra}, steps, keys, checks};
+  },
+  tips:[
+    "Sense check: series total is bigger than the biggest, parallel total is smaller than the smallest.",
+    "Equal resistors in parallel: divide one by how many there are. Two 10 Ω in parallel = 5 Ω.",
+    "Don't forget the last step in parallel: flip it back over with x⁻¹ or 1 ÷.",
+    "Mixed circuits: work out the parallel bits first, then add them in series."
+  ]
+},
+
+/* 11 TT EARTH ELECTRODE */
+{
+  id:"tt", group:"live", title:"Earth electrode (TT systems)", short:"Is the electrode good enough for the RCD?", fshort:"RA × IΔn ≤ 50 V",
+  lede:"On a TT system the RCD does the fault protection. Check the earth electrode resistance is low enough for it.",
+  formula:[`R<sub>A</sub> × I<sub>Δn</sub> ≤ 50 V`,`Max R<sub>A</sub> = 50 ÷ I<sub>Δn</sub>`],
+  words:"The electrode resistance times the RCD's rated trip current must not be more than 50 volts.",
+  what:`<p>On a TT system the installation has its own earth electrode (an earth rod) instead of an earth from the supply company. The ground has quite a high resistance, so an earth fault can't draw enough current to trip a breaker. An RCD does the job instead.</p><p>R<sub>A</sub> is the resistance of the electrode and the protective conductors connecting it. Multiply it by the RCD's rated residual current I<sub>Δn</sub> and you get the voltage that exposed metalwork could rise to before the RCD trips. It must not be more than 50 V.</p>`,
+  why:`<p>50 V is the touch voltage limit. Keep R<sub>A</sub> low and anyone touching faulty metalwork won't get a dangerous shock before the RCD trips. Guidance also says a reading over 200 Ω may not be stable, because ground resistance changes as the soil dries out or freezes.</p>`,
+  sources:[
+    ["tester","R<sub>A</sub>: measured with an earth electrode tester, or with an earth loop impedance tester at the origin with the main earthing conductor disconnected (reconnect it straight after)."],
+    ["design","I<sub>Δn</sub>: printed on the RCD, e.g. 30 mA. Convert to amps: 30 mA = 0.03 A."],
+    ["tables","The rule and maximum values: BS 7671 Regulation 411.5.3 and Table 41.5."]
+  ],
+  inputs:[
+    {id:"idn", label:"RCD rated residual current IΔn", type:"select", def:"30", opts:[{v:"30",l:"30 mA"},{v:"100",l:"100 mA"},{v:"300",l:"300 mA"},{v:"500",l:"500 mA"}]},
+    {id:"ra", label:"Measured RA (optional)", unit:"Ω", def:"85", hint:"Leave empty to just find the maximum allowed."}
+  ],
+  compute(v){
+    const mA=num(v.idn), A=mA/1000, max=50/A;
+    const steps=[`Convert the RCD rating to amps: ${mA} mA ÷ 1000 = <b>${tidy(A)} A</b>.`, `Maximum R<sub>A</sub> = 50 ÷ ${tidy(A)} = <b>${fx(max,0)} Ω</b>. That matches Table 41.5.`];
+    const keys=[{cap:"Maximum RA", seq:["50","÷",tidy(A),"="]}], checks=[];
+    if (Number.isFinite(v.ra)){
+      if (v.ra<=0) return {error:"RA must be above zero."};
+      const tv=v.ra*A;
+      steps.push(`Touch voltage = R<sub>A</sub> × I<sub>Δn</sub> = ${tidy(v.ra)} × ${tidy(A)} = <b>${fx(tv,2)} V</b>.`, `Compare with 50 V: ${fx(tv,2)} V ${tv<=50?"≤":">"} 50 V.`);
+      keys.push({cap:"Touch voltage", seq:[tidy(v.ra),"×",tidy(A),"="]});
+      checks.push(tv<=50 ? {type:"pass", text:`<b>${fx(tv,2)} V</b> is within 50 V, so the electrode meets the regulation with a ${mA} mA RCD.`} : {type:"fail", text:`<b>${fx(tv,2)} V</b> is over 50 V. The electrode resistance is too high for this RCD. Improve the electrode (deeper or extra rods) or use a more sensitive RCD.`});
+      if (v.ra>200) checks.push({type:"info", text:`${tidy(v.ra)} Ω is over 200 Ω. Guidance says the reading may not be stable as the ground dries out or freezes. Aim lower.`});
+      return {answer:{label:"Touch voltage RA × IΔn", value:tv, unit:"V", dp:2, extra:`Max R<sub>A</sub> for ${mA} mA: <b>${fx(max,0)} Ω</b>`}, steps, keys, checks};
+    }
+    return {answer:{label:"Maximum RA", value:max, unit:"Ω", dp:0}, steps, keys, checks:[{type:"info", text:"Even when the maths allows more, aim for an electrode below 200 Ω."}]};
+  },
+  tips:[
+    "Convert mA to A first: 30 mA = 0.03 A. Using 30 gives an answer 1000 times too big.",
+    "1667 Ω is the regulation limit for 30 mA, but aim for under 200 Ω so it stays reliable all year.",
+    "Readings are higher in dry summer ground. Test in the worst conditions if you can.",
+    "If you disconnect the main earthing conductor to measure, reconnect it before doing anything else."
+  ]
+},
+
+/* 12 CORRECTED ZS */
+{
+  id:"zscorr", group:"live", title:"Correcting a measured Zs", short:"Allow for the cable warming up in use", fshort:"Ze + (R1+R2) × 1.20",
+  lede:"Turn a Zs reading taken on a cold cable into the value when it's running hot, then compare with Table 41.3.",
+  formula:[`R<sub>1</sub>+R<sub>2</sub> = Z<sub>s</sub> − Z<sub>e</sub>`,`Z<sub>s</sub> (hot) = Z<sub>e</sub> + (R<sub>1</sub>+R<sub>2</sub>) × 1.20`],
+  words:"Take Ze off your reading to get the circuit's own part. Multiply that by 1.20 for working temperature, then add Ze back on.",
+  what:`<p>When you test, the cable is cold. In use it can reach 70°C and its copper resistance goes up by about 20%. Only the circuit's own conductors heat up, not the supply, so only the R<sub>1</sub>+R<sub>2</sub> part gets the 1.20 multiplier.</p><p>The quick alternative is the 80% rule: compare your cold reading with 80% of the table value. This sum is the more exact way, and it shows why the 80% rule works.</p>`,
+  why:`<p>A circuit that only just passes when cold could fail when it's hot, and the breaker might not trip in time during a fault. Correcting the reading proves it will still be safe at full load.</p>`,
+  sources:[
+    ["tester","Measured Zs: at the furthest point of the circuit with your loop tester."],
+    ["tester","Ze: measured at the origin with the main earth disconnected, or the declared value."],
+    ["tables","1.20 multiplier: On-Site Guide Appendix I and GN3 Appendix B, for 70°C thermoplastic cable."],
+    ["tables","Max Zs: BS 7671 Table 41.3."]
+  ],
+  inputs:[
+    {id:"zs", label:"Measured Zs at the furthest point", unit:"Ω", def:"1.05"},
+    {id:"ze", label:"Ze", unit:"Ω", def:"0.35"},
+    {id:"type", label:"Breaker type", type:"select", def:"B", opts:[{v:"B",l:"Type B"},{v:"C",l:"Type C"},{v:"D",l:"Type D"}]},
+    {id:"In", label:"Breaker rating", type:"select", def:"32", opts:RATINGS.map(r=>({v:String(r),l:r+" A"}))}
+  ],
+  compute(v){
+    if (![v.zs,v.ze].every(Number.isFinite)) return {error:"Enter the measured Zs and Ze."};
+    if (v.zs<=v.ze) return {error:"Zs must be bigger than Ze, because it includes Ze plus the circuit."};
+    const r12=v.zs-v.ze, hot=v.ze+r12*1.2, In=num(v.In), Ia=MULT[v.type]*In, c=Math.round(21850/Ia), max=c/100, e80=Math.round(c*0.8)/100;
+    const steps=[
+      `Find the circuit's own part: R<sub>1</sub>+R<sub>2</sub> = ${tidy(v.zs)} − ${tidy(v.ze)} = <b>${fx(r12,2)} Ω</b>.`,
+      `Correct it to 70°C: ${fx(r12,2)} × 1.20 = <b>${fx(r12*1.2,3)} Ω</b>.`,
+      `Add Ze back on: ${tidy(v.ze)} + ${fx(r12*1.2,3)} = <b>${fx(hot,2)} Ω</b>.`,
+      `Table 41.3 maximum for a ${v.type}${In}: <b>${fx(max,2)} Ω</b>. Compare: ${fx(hot,2)} ${hot<=max?"≤":">"} ${fx(max,2)}.`,
+      `For comparison, the 80% rule: ${tidy(v.zs)} Ω against ${fx(e80,2)} Ω (80% of ${fx(max,2)}).`
+    ];
+    const checks=[ hot<=max ? {type:"pass", text:`Corrected Zs <b>${fx(hot,2)} Ω</b> is within the ${fx(max,2)} Ω maximum for a ${v.type}${In}. It'll still disconnect in time when the cable is hot.`}
+                           : {type:"fail", text:`Corrected Zs <b>${fx(hot,2)} Ω</b> is over the ${fx(max,2)} Ω maximum for a ${v.type}${In}. When the cable is hot the breaker may not trip in time. Speak to your supervisor.`}];
+    if ((v.zs<=e80)!==(hot<=max)) checks.push({type:"info", text:`The 80% rule gives a ${v.zs<=e80?"pass":"fail"} here. It's a quick rule of thumb and errs on the safe side; the corrected value is the more exact check.`});
+    return {answer:{label:"Corrected Zs (at 70°C)", value:hot, unit:"Ω", dp:2, extra:`Max Zs for ${v.type}${In}: <b>${fx(max,2)} Ω</b>`}, steps, keys:[{cap:"Whole sum in one go", seq:[tidy(v.ze),"+","(",tidy(v.zs),"−",tidy(v.ze),")","×","1.2","="]}], checks};
+  },
+  tips:[
+    "Only R1+R2 gets the 1.20. Ze is the supply's part and doesn't heat up with your circuit.",
+    "1.20 is for 70°C thermoplastic (PVC) cable. 90°C XLPE uses 1.28.",
+    "GN3 also has factors for the temperature you tested at. These sums assume about 20°C.",
+    "If you only have R1+R2 from your continuity test, use the Zs calculator's numbers: Zs hot = Ze + (R1+R2) × 1.20."
+  ]
+},
+
+/* 13 MAX LENGTH */
+{
+  id:"maxlen", group:"design", title:"Maximum cable length", short:"How long can the circuit be?", fshort:"L = (Zs − Ze) ÷ R",
+  lede:"Find the longest a twin and earth circuit can be before Zs or voltage drop goes over the limit.",
+  formula:[`L<sub>Zs</sub> = (Z<sub>s max</sub> − Z<sub>e</sub>) × 1000 ÷ (mΩ/m × 1.20)`,`L<sub>VD</sub> = (V<sub>limit</sub> × 1000) ÷ (mV/A/m × I<sub>b</sub>)`],
+  words:"Take Ze off the maximum Zs to see how much resistance the cable is allowed, then divide by its resistance per metre (hot). Do the same with the voltage drop allowance. The shorter length wins.",
+  what:`<p>Two things limit how long a circuit can be. The longer the cable, the higher its resistance, so <b>Zs</b> goes up until the breaker can't trip fast enough. The longer the cable, the more <b>voltage drop</b> too.</p><p>Work out both lengths. The circuit can be no longer than the shorter one.</p>`,
+  why:`<p>Designers use this to check a long run (to a garden office, garage or the far end of a building) will work before the cable goes in. It's a common exam question too.</p>`,
+  sources:[
+    ["tables","Max Zs: BS 7671 Table 41.3 for the breaker."],
+    ["site","Ze: measured, or the declared value (0.35 Ω TN-C-S, 0.8 Ω TN-S)."],
+    ["tables","R1+R2 per metre: On-Site Guide Appendix I or GN3. 1.20 converts it to 70°C."],
+    ["tables","mV/A/m and limits: BS 7671 Appendix 4 (Table 4D5 for twin and earth, Table 4Ab for limits)."]
+  ],
+  inputs:[
+    {id:"cab", label:"Twin and earth cable", type:"select", def:"2.5/1.5", opts:Object.keys(TE_R12).map(k=>({v:k,l:`${k} mm² — R1+R2 ${TE_R12[k]} mΩ/m`}))},
+    {id:"ze", label:"Ze", unit:"Ω", def:"0.35"},
+    {id:"type", label:"Breaker type", type:"select", def:"B", opts:[{v:"B",l:"Type B"},{v:"C",l:"Type C"},{v:"D",l:"Type D"}]},
+    {id:"In", label:"Breaker rating", type:"select", def:"20", opts:RATINGS.map(r=>({v:String(r),l:r+" A"}))},
+    {id:"ib", label:"Design current Ib (optional)", unit:"A", def:"16", hint:"Add it to check the voltage drop length as well."},
+    {id:"kind", label:"Circuit type", type:"select", def:"5", opts:[{v:"3",l:"Lighting — 3% (6.9 V)"},{v:"5",l:"Other uses — 5% (11.5 V)"}]}
+  ],
+  compute(v){
+    if (!Number.isFinite(v.ze)) return {error:"Enter Ze."};
+    const r=TE_R12[v.cab], line=v.cab.split("/")[0].replace(/\.0$/,""), In=num(v.In), Ia=MULT[v.type]*In, max=Math.round(21850/Ia)/100;
+    if (max<=v.ze) return {error:`Ze (${tidy(v.ze)} Ω) is already at or above the ${fx(max,2)} Ω maximum for a ${v.type}${In}. No length of cable will work: use RCD protection or a different device.`};
+    const allow=max-v.ze, Lz=allow*1000/(r*1.2);
+    const steps=[
+      `Table 41.3 max Zs for a ${v.type}${In}: <b>${fx(max,2)} Ω</b>.`,
+      `Take off Ze to see what the cable is allowed: ${fx(max,2)} − ${tidy(v.ze)} = <b>${fx(allow,2)} Ω</b>.`,
+      `Cable resistance when hot: ${r} mΩ/m × 1.20 = <b>${fx(r*1.2,2)} mΩ/m</b>.`,
+      `Length: ${fx(allow,2)} × 1000 ÷ ${fx(r*1.2,2)} = <b>${fx(Lz,1)} m</b>.`
+    ];
+    const keys=[{cap:"Length limited by Zs", seq:["(",fx(max,2),"−",tidy(v.ze),")","×","1000","÷","(",String(r),"×","1.2",")","="]}];
+    let L=Lz, by="Zs", extra="";
+    const mvTE=CABLE_DATA.te.mv["1"][CABLE_DATA.te.sizes.indexOf(line==="1"?"1":line)];
+    if (Number.isFinite(v.ib) && v.ib>0 && mvTE){
+      const lim=num(v.kind), limV=230*lim/100, Lv=limV*1000/(mvTE*v.ib);
+      steps.push(`Voltage drop allowance: ${lim}% of 230 V = <b>${fx(limV,1)} V</b>.`, `Length: ${fx(limV,1)} × 1000 ÷ (${mvTE} mV/A/m × ${tidy(v.ib)} A) = <b>${fx(Lv,1)} m</b>.`);
+      keys.push({cap:"Length limited by voltage drop", seq:[fx(limV,1),"×","1000","÷","(",String(mvTE),"×",tidy(v.ib),")","="]});
+      extra=`Zs limit: <b>${fx(Lz,1)} m</b> · voltage drop limit: <b>${fx(Lv,1)} m</b>`;
+      if (Lv<Lz){ L=Lv; by="voltage drop"; }
+      steps.push(`The shorter one wins: <b>${fx(Math.floor(L),0)} m</b> (limited by ${by}).`);
+    }
+    const out=Math.floor(L*10)/10;
+    return {answer:{label:"Maximum length", value:out, unit:"m", dp:1, extra}, steps, keys,
+      checks:[{type:"info", text:`The circuit can be up to <b>${fx(Math.floor(L),0)} m</b> long, limited by ${by}. Round down, not up. Also check the cable's current rating with the cable sizing calculator.`}]};
+  },
+  tips:[
+    "Round lengths down. 42.9 m means 42 m, not 43.",
+    "Use the hot resistance (× 1.20) with the Table 41.3 maximum. Don't use the 80% figure as well, or you're allowing for the heat twice.",
+    "A high Ze leaves less for the cable, so TN-S and TT supplies allow much shorter circuits.",
+    "If voltage drop limits it, a bigger cable helps. If Zs limits it, a bigger CPC or RCD protection may be the answer."
+  ]
+},
+
+/* 14 MAX DEMAND */
+{
+  id:"demand", group:"design", title:"Maximum demand and diversity", short:"How much current will the house really draw?", fshort:"Loads × diversity",
+  lede:"Add up a household's loads using the On-Site Guide diversity allowances. Leave anything that isn't there empty.",
+  formula:[`I = P ÷ 230`,`Max demand = Σ (each load × its diversity)`],
+  words:"Turn each load into amps, apply its diversity allowance, then add them all up.",
+  what:`<p>If you added up every appliance at full power, the total would be huge. In real life they're never all on at once. <b>Diversity</b> is an allowance for that.</p><p>The On-Site Guide gives a set allowance for each type of load in a house. For example, lighting is taken as 66% of its total, and a cooker as 10 A plus 30% of the rest.</p>`,
+  why:`<p>Maximum demand decides whether the supply fuse, meter tails and main switch are big enough. It matters most when adding a big load like a shower, heat pump or EV charger to an existing house.</p>`,
+  sources:[
+    ["design","Loads: from rating plates, the drawings or the customer. In watts or kilowatts."],
+    ["tables","Diversity allowances: On-Site Guide Appendix A (Table A2)."],
+    ["site","Supply fuse: printed on the supplier's cut-out, typically 60, 80 or 100 A."]
+  ],
+  inputs:[
+    {id:"light", label:"Lighting: total of all lights", unit:"W", def:"1200"},
+    {id:"sockN", label:"Number of socket circuits (rings or radials)", unit:"", def:"2"},
+    {id:"sockA", label:"Rating of the largest socket circuit", unit:"A", def:"32"},
+    {id:"sockB", label:"Rating of the other socket circuits", unit:"A", def:"32", hint:"Assumes the others are all the same rating."},
+    {id:"cook", label:"Cooking appliances: total", unit:"kW", def:"10"},
+    {id:"cookSock", label:"Cooker control unit has a socket (adds 5 A)", type:"check", def:true},
+    {id:"sh1", label:"Largest shower or instant water heater", unit:"kW", def:"9.5"},
+    {id:"sh2", label:"Second largest shower", unit:"kW", def:""},
+    {id:"sh3", label:"Any others, added together", unit:"kW", def:""},
+    {id:"imm", label:"Immersion heater", unit:"kW", def:"3"},
+    {id:"store", label:"Storage or floor heating", unit:"kW", def:""},
+    {id:"heat", label:"Other heating and power", unit:"kW", def:"", hint:"Fixed heaters and other loads not listed above."},
+    {id:"ev", label:"EV charger", unit:"kW", def:"", hint:"Counted at full load unless it's load managed."},
+    {id:"fuse", label:"Supply fuse", type:"select", def:"100", opts:[{v:"60",l:"60 A"},{v:"80",l:"80 A"},{v:"100",l:"100 A"}]}
+  ],
+  compute(v){
+    const z=x=>Number.isFinite(x)&&x>0?x:0, A=kw=>kw*1000/230;
+    const parts=[], steps=[];
+    const lw=z(v.light); if (lw){ const i=lw/230*0.66; parts.push(i); steps.push(`Lighting: ${tidy(lw)} W ÷ 230 = ${fx(lw/230,2)} A, × 66% = <b>${fx(i,2)} A</b>.`); }
+    const n=Math.floor(z(v.sockN)); if (n){ const big=z(v.sockA), oth=z(v.sockB), i=big+0.4*oth*(n-1); parts.push(i); steps.push(`Sockets: largest circuit ${tidy(big)} A at 100%${n>1?`, plus ${n-1} × ${tidy(oth)} A × 40% = ${fx(0.4*oth*(n-1),1)} A`:""}. Total <b>${fx(i,1)} A</b>.`); }
+    const ck=z(v.cook); if (ck){ const full=A(ck), i=(full<=10?full:10+0.3*(full-10))+(v.cookSock?5:0); parts.push(i); steps.push(`Cooking: ${tidy(ck)} kW ÷ 230 = ${fx(full,2)} A. ${full<=10?`That's under 10 A, so take it all`:`10 A + 30% of the other ${fx(full-10,2)} A = ${fx(10+0.3*(full-10),2)} A`}${v.cookSock?", + 5 A for the socket":""}. <b>${fx(i,2)} A</b>.`); }
+    const s1=z(v.sh1), s2=z(v.sh2), s3=z(v.sh3); if (s1||s2||s3){ const i=A(s1)+A(s2)+0.25*A(s3); parts.push(i); steps.push(`Showers: ${s1?`largest ${fx(A(s1),2)} A at 100%`:""}${s2?`, second ${fx(A(s2),2)} A at 100%`:""}${s3?`, others ${fx(A(s3),2)} A × 25%`:""}. <b>${fx(i,2)} A</b>.`); }
+    const im=z(v.imm); if (im){ const i=A(im); parts.push(i); steps.push(`Immersion heater: ${tidy(im)} kW ÷ 230 = <b>${fx(i,2)} A</b> (no diversity).`); }
+    const st=z(v.store); if (st){ const i=A(st); parts.push(i); steps.push(`Storage or floor heating: ${tidy(st)} kW ÷ 230 = <b>${fx(i,2)} A</b> (no diversity).`); }
+    const ht=z(v.heat); if (ht){ const f=A(ht), i=Math.min(f,10)+0.5*Math.max(f-10,0); parts.push(i); steps.push(`Other heating and power: ${fx(f,2)} A. ${f<=10?"Under 10 A, so take it all":`10 A + 50% of the other ${fx(f-10,2)} A`}. <b>${fx(i,2)} A</b>.`); }
+    const ev=z(v.ev); if (ev){ const i=A(ev); parts.push(i); steps.push(`EV charger: ${tidy(ev)} kW ÷ 230 = <b>${fx(i,2)} A</b> (full load).`); }
+    if (!parts.length) return {error:"Enter at least one load."};
+    const tot=parts.reduce((a,b)=>a+b,0), fuse=num(v.fuse);
+    steps.push(`Add them all up: <b>${fx(tot,1)} A</b>.`);
+    const checks=[ tot<=fuse ? {type:"pass", text:`<b>${fx(tot,1)} A</b> is within the ${fuse} A supply fuse.`} : {type:"fail", text:`<b>${fx(tot,1)} A</b> is more than the ${fuse} A supply fuse. Talk to the network operator about an upgrade, or reduce the load (e.g. load management for an EV charger).`}];
+    if (tot<=fuse && tot>fuse*0.9) checks.push({type:"info", text:"That's close to the fuse rating. Think about future loads too."});
+    if (tot>fuse*0.9) checks.push({type:"info", text:"The On-Site Guide method is deliberately cautious, so real demand is usually lower. Designers can use other methods or measured data, and the network operator makes the final call on a supply upgrade."});
+    return {answer:{label:"Maximum demand", value:tot, unit:"A", dp:1, extra:`≈ <b>${fx(tot*230/1000,1)} kW</b> at 230 V`}, steps, keys:ck?[{cap:"Cooker with diversity", seq:["10","+","0.3","×","(",fx(A(ck),2),"−","10",")",...(v.cookSock?["+","5"]:[]),"="]}]:[], checks};
+  },
+  tips:[
+    "Convert kW to amps first: kW × 1000 ÷ 230.",
+    "Showers get no diversity for the two biggest, because people do use them at the same time.",
+    "Immersion heaters and storage heating run for hours, so they get no diversity at all.",
+    "Diversity is for the whole installation (the supply). Don't use it to size the cable for a single circuit."
+  ]
+},
+
+/* 15 THREE-PHASE */
+{
+  id:"threeph", group:"science", title:"Three-phase power and current", short:"Current drawn by a three-phase load", fshort:"P = √3 × VL × IL × pf",
+  lede:"Fill in power or current (leave the other empty). The calculator works out the one you left out.",
+  formula:[`P = √3 × V<sub>L</sub> × I<sub>L</sub> × pf`,`I<sub>L</sub> = P ÷ (√3 × V<sub>L</sub> × pf)`,`V<sub>L</sub> = √3 × V<sub>ph</sub>`],
+  words:"Three-phase power is root 3 times the line voltage times the line current times the power factor.",
+  what:`<p>A three-phase supply has three lines, each 120° apart. In the UK each line is 230 V to neutral (the <b>phase voltage</b>) and 400 V between any two lines (the <b>line voltage</b>). 400 = √3 × 230.</p><p>For a balanced load (the same on each phase), total power is √3 × line voltage × line current × power factor. √3 is about 1.732.</p>`,
+  why:`<p>You need the line current to choose the breaker and size the cable for three-phase motors, heaters, EV chargers and distribution boards. Spreading a load over three phases means much less current in each conductor than on single-phase.</p>`,
+  sources:[
+    ["design","Power: from the rating plate or drawings. Motors are rated by output, so use the input power or full load current from the plate if given."],
+    ["site","Line voltage: 400 V in the UK."],
+    ["design","Power factor: from the rating plate. 1 for heaters, about 0.8 to 0.9 for motors."]
+  ],
+  inputs:[
+    {id:"P", label:"Power P", unit:"kW", def:"11"},
+    {id:"I", label:"Line current IL", unit:"A", def:"", hint:"Leave empty to find it."},
+    {id:"VL", label:"Line voltage VL", unit:"V", def:"400"},
+    {id:"pf", label:"Power factor", unit:"", def:"0.85", hint:"1 for heating loads."}
+  ],
+  compute(v){
+    const pf=Number.isFinite(v.pf)?v.pf:1, VL=v.VL;
+    if (!(VL>0)) return {error:"Enter the line voltage."};
+    if (!(pf>0&&pf<=1)) return {error:"Power factor must be between 0 and 1."};
+    const hasP=Number.isFinite(v.P)&&v.P>0, hasI=Number.isFinite(v.I)&&v.I>0;
+    if (hasP===hasI) return {error:"Fill in either the power or the current, and leave the other empty."};
+    const r3=Math.sqrt(3), steps=[`√3 = <b>1.732</b>. Phase voltage = ${tidy(VL)} ÷ 1.732 = ${fx(VL/r3,1)} V.`];
+    if (hasP){
+      const W=v.P*1000, I=W/(r3*VL*pf), single=W/(230*pf);
+      steps.push(`Turn kW into W: ${tidy(v.P)} × 1000 = <b>${tidy(W)} W</b>.`, `Bottom line: 1.732 × ${tidy(VL)} × ${tidy(pf)} = <b>${fx(r3*VL*pf,1)}</b>.`, `I<sub>L</sub> = ${tidy(W)} ÷ ${fx(r3*VL*pf,1)} = <b>${fx(I,2)} A</b> in each line.`);
+      return {answer:{label:"Line current IL", value:I, unit:"A", dp:2, extra:`Apparent power: <b>${fx(W/pf/1000,2)} kVA</b>`}, steps,
+        keys:[{cap:"Line current", seq:[tidy(W),"÷","(","√","3","×",tidy(VL),"×",tidy(pf),")","="]}],
+        checks:[{type:"info", text:`The same load on single-phase 230 V would draw <b>${fx(single,1)} A</b>. Three-phase spreads it out, so each line carries much less.`}]};
+    }
+    const P=r3*VL*v.I*pf;
+    steps.push(`P = 1.732 × ${tidy(VL)} × ${tidy(v.I)} × ${tidy(pf)} = <b>${fx(P,0)} W</b>.`, `In kW: ${fx(P,0)} ÷ 1000 = <b>${fx(P/1000,2)} kW</b>.`);
+    return {answer:{label:"Power P", value:P/1000, unit:"kW", dp:2, extra:`Apparent power: <b>${fx(P/pf/1000,2)} kVA</b>`}, steps, keys:[{cap:"Power in W", seq:["√","3","×",tidy(VL),"×",tidy(v.I),"×",tidy(pf),"="]}], checks:[]};
+  },
+  tips:[
+    "Use the line voltage (400 V) with √3. Using 230 V with √3 is a common mistake.",
+    "On a calculator, put the whole bottom line in brackets: P ÷ (√3 × 400 × pf).",
+    "√3 × 400 = 692.8. Handy to remember: for a heater, I ≈ W ÷ 693.",
+    "This assumes a balanced load. If the phases are loaded differently, work each one out on its own."
+  ]
+},
+
+/* 16 POWER FACTOR */
+{
+  id:"pf", group:"science", title:"Power factor and kVA", short:"True power, apparent power and pf", fshort:"P = V × I × pf",
+  lede:"Enter voltage and current, then either the power factor or the true power. The calculator works out the rest.",
+  formula:[`S = V × I`,`P = S × pf`,`pf = P ÷ S`,`Q = √(S² − P²)`],
+  words:"Apparent power is volts times amps. True power is apparent power times power factor.",
+  what:`<p>With AC, some loads (motors, transformers, fluorescent ballasts) make the current lag behind the voltage. The supply still has to deliver the full current, but not all of it does useful work.</p><p><b>Apparent power</b> S (VA) is V × I, what the cable and supply have to carry. <b>True power</b> P (W) is what does the work. <b>Reactive power</b> Q (var) is the part that flows back and forth. <b>Power factor</b> pf = P ÷ S, between 0 and 1.</p>`,
+  why:`<p>A low power factor means more current for the same useful power, so cables, breakers and transformers need to be bigger. It's why motors and generators are rated in kVA, and why big sites fit power factor correction.</p>`,
+  sources:[
+    ["tester","Voltage and current: measured with a multimeter and clamp meter."],
+    ["design","Power factor or power: from the rating plate, or a power analyser."]
+  ],
+  inputs:[
+    {id:"V", label:"Voltage V", unit:"V", def:"230"},
+    {id:"I", label:"Current I", unit:"A", def:"10"},
+    {id:"pfv", label:"Power factor", unit:"", def:"0.8", hint:"Fill in this or the true power, not both."},
+    {id:"P", label:"True power P", unit:"W", def:""}
+  ],
+  compute(v){
+    if (!(v.V>0)||!(v.I>0)) return {error:"Enter the voltage and the current."};
+    const S=v.V*v.I, hasPf=Number.isFinite(v.pfv), hasP=Number.isFinite(v.P);
+    if (hasPf===hasP) return {error:"Fill in either the power factor or the true power, and leave the other empty."};
+    let pf, P; const steps=[`Apparent power S = ${tidy(v.V)} × ${tidy(v.I)} = <b>${fx(S,0)} VA</b> (${fx(S/1000,2)} kVA).`];
+    if (hasPf){ if (!(v.pfv>0&&v.pfv<=1)) return {error:"Power factor must be between 0 and 1."}; pf=v.pfv; P=S*pf; steps.push(`True power P = S × pf = ${fx(S,0)} × ${tidy(pf)} = <b>${fx(P,0)} W</b>.`); }
+    else { P=v.P; pf=P/S; if (pf>1) return {error:"True power can't be more than V × I. Check the numbers."}; steps.push(`Power factor = P ÷ S = ${tidy(P)} ÷ ${fx(S,0)} = <b>${fx(pf,2)}</b>.`); }
+    const Q=Math.sqrt(Math.max(S*S-P*P,0)), ang=Math.acos(pf)*180/Math.PI;
+    steps.push(`Reactive power Q = √(S² − P²) = √(${fx(S,0)}² − ${fx(P,0)}²) = <b>${fx(Q,0)} var</b>.`, `Phase angle = cos⁻¹(${fx(pf,2)}) = <b>${fx(ang,1)}°</b>.`);
+    const extra=`S = <b>${fx(S,0)} VA</b> · Q = <b>${fx(Q,0)} var</b> · angle <b>${fx(ang,1)}°</b>`;
+    const ans = hasPf ? {label:"True power P", value:P, unit:"W", dp:0, extra} : {label:"Power factor", value:pf, unit:"", dp:2, extra};
+    return {answer:ans, steps, keys:[{cap:hasPf?"True power":"Power factor", seq:hasPf?[tidy(v.V),"×",tidy(v.I),"×",tidy(pf),"="]:[tidy(P),"÷","(",tidy(v.V),"×",tidy(v.I),")","="]},{cap:"Reactive power", seq:["√","(",fx(S,0),"x²","−",fx(P,0),"x²",")","="]}],
+      checks:[{type:"info", text: pf>=0.95 ? "A power factor this close to 1 is good: almost all the current does useful work." : `With a power factor of ${fx(pf,2)}, the cable carries ${tidy(v.I)} A but only ${fx(pf*100,0)}% of the power does useful work.`}]};
+  },
+  tips:[
+    "Size cables and breakers on the actual current (or kVA), not just the watts.",
+    "Power factor has no units. It's always between 0 and 1.",
+    "A heater or kettle has a power factor of 1, so watts = volts × amps.",
+    "Remember the power triangle: S is the long side, P the bottom, Q the upright."
+  ]
 }
 ];
 
@@ -919,7 +1255,8 @@ const GROUPS = [
   {id:"basics", name:"Start here", note:"The foundation. Get comfortable with this first."},
   {id:"dead", name:"Dead tests", note:"Done with the supply isolated, in this order."},
   {id:"live", name:"Live tests", note:"Done with the supply on, after the dead tests have passed."},
-  {id:"design", name:"Design checks", note:"Sums for choosing cables and proving they're safe."}
+  {id:"design", name:"Design checks", note:"Sums for choosing cables and proving they're safe."},
+  {id:"science", name:"AC and three-phase", note:"Electrical science for motors, three-phase loads and power factor."}
 ];
 const ORDER = GROUPS.flatMap(g=>CALCS.filter(c=>c.group===g.id));
 
@@ -935,8 +1272,9 @@ const store = {
 const BOLT = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4 13.5h6.5L9 22l10-12.5h-6.6L13.5 2z"/></svg>`;
 
 /* ---------- version: keep in step with VERSION in sw.js ---------- */
-const APP_VERSION = "1.2.0";
+const APP_VERSION = "1.3.0";
 const WHATS_NEW = {
+  "1.3.0": ["7 new calculators: series and parallel, TT earth electrode, corrected Zs, maximum cable length, maximum demand, three-phase power, power factor", "Cable sizing and voltage drop now cover singles, multicore and SWA, single and three-phase, with every installation method", "New tables: installation methods, more cable types, diversity, AC facts", "More quiz questions"],
   "1.2.0": ["New Tables tab: all the look-up tables, and where to find each one in the books", "Table lookup quiz: sums where you find the numbers yourself", "44 more multiple choice questions", "Max Zs now matches BS 7671 Table 41.3 exactly"],
   "1.1.0": ["Quiz mode with random practice sums", "Multiple choice: which test or sum fits the job", "Progress page with scores, retests and backups", "The app now tells you when there's an update"]
 };
@@ -1018,7 +1356,7 @@ function renderHome(){
     html += `<section class="group g-${g.id}"><div class="ghead"><span class="num">0${gi+1}</span><h2>${g.name}</h2></div><p>${g.note}</p><ul class="cards">`;
     items.forEach(c=>{
       const d = nailed.has(c.id);
-      const step = c.step ? `Test ${c.step}` : (g.id==="basics" ? "Start here" : "Design");
+      const step = c.step ? `Test ${c.step}` : ({basics:"Start here", dead:"Dead test", live:"Live test", design:"Design", science:"Science"}[g.id]);
       html += `<li><a class="card${d?" done":""}" href="#/${c.id}"><span class="top"><span class="step">${step}</span>${d?`<span class="done-badge">✓ Nailed</span>`:""}</span><span class="t">${c.title}</span><span class="s">${c.short}</span><span class="f">${c.fshort}</span></a></li>`;
     });
     html += `</ul></section>`;
@@ -1035,7 +1373,8 @@ function fieldHTML(c, f){
   const val = state[c.id][f.id];
   const fid = `${c.id}-${f.id}`;
   if (f.type==="select"){
-    return `<div class="field"><label for="${fid}">${f.label}</label><select id="${fid}" data-f="${f.id}">${f.opts.map(o=>`<option value="${esc(o.v)}"${String(val)===String(o.v)?" selected":""}>${esc(o.l)}</option>`).join("")}</select>${f.hint?`<div class="hint">${f.hint}</div>`:""}</div>`;
+    const opts = typeof f.opts==="function" ? f.opts(state[c.id]) : f.opts;
+    return `<div class="field"><label for="${fid}">${f.label}</label><select id="${fid}" data-f="${f.id}">${opts.map(o=>`<option value="${esc(o.v)}"${String(val)===String(o.v)?" selected":""}>${esc(o.l)}</option>`).join("")}</select>${f.hint?`<div class="hint">${f.hint}</div>`:""}</div>`;
   }
   if (f.type==="check"){
     return `<div class="field check"><label><input type="checkbox" id="${fid}" data-f="${f.id}"${val?" checked":""}> ${f.label}</label>${f.hint?`<div class="hint">${f.hint}</div>`:""}</div>`;
@@ -1043,8 +1382,14 @@ function fieldHTML(c, f){
   return `<div class="field"><label for="${fid}">${f.label}</label><div class="row"><input id="${fid}" data-f="${f.id}" type="text" inputmode="decimal" autocomplete="off" value="${esc(val)}"><span class="unit">${f.unit||""}</span></div>${f.hint?`<div class="hint">${f.hint}</div>`:""}</div>`;
 }
 
-function renderCalc(c){
+// Keep select values valid when their options depend on another field (e.g. methods for a cable type)
+function fixSelects(c){
+  c.inputs.forEach(f=>{ if (f.type!=="select" || typeof f.opts!=="function") return;
+    const opts=f.opts(state[c.id]); if (!opts.some(o=>String(o.v)===String(state[c.id][f.id]))) state[c.id][f.id]=opts.some(o=>String(o.v)===String(f.def))?f.def:opts[0].v; });
+}
+function renderCalc(c, keep){
   if (!state[c.id]){ state[c.id]={}; c.inputs.forEach(f=>state[c.id][f.id]=f.def); }
+  fixSelects(c);
   $("#title").textContent = "Testing Maths";
   $("#back").hidden = false;
   document.body.className = "g-" + c.group;
@@ -1072,11 +1417,14 @@ function renderCalc(c){
   $("#inputs").addEventListener("input", e=>{
     const el=e.target, k=el.dataset.f; if(!k) return;
     state[c.id][k] = el.type==="checkbox" ? el.checked : el.value;
-    revealed[c.id]=false; update(c);
+    revealed[c.id]=false;
+    const f=c.inputs.find(x=>x.id===k), dependent=c.inputs.some(x=>typeof x.opts==="function");
+    if (dependent && el.tagName==="SELECT"){ const y=window.scrollY; renderCalc(c, true); window.scrollTo(0,y); const again=document.getElementById(el.id); if (again) again.focus({preventScroll:true}); return; }
+    update(c);
   });
   $("#trymode").addEventListener("change", e=>{ tryMode[c.id]=e.target.checked; revealed[c.id]=false; update(c); });
   update(c);
-  window.scrollTo(0,0);
+  if (!keep) window.scrollTo(0,0);
 }
 
 function keysHTML(k){
@@ -1103,7 +1451,7 @@ function update(c){
   const hide = tryMode[c.id] && !revealed[c.id];
   let html = "";
   if (tryMode[c.id]){
-    html += `<div class="attempt"><label for="mine" style="font-weight:600">Your answer for ${a.label.charAt(0).toLowerCase()+a.label.slice(1)} (${a.unit})</label><div class="row"><input id="mine" type="text" inputmode="decimal" autocomplete="off" value="${esc(state[c.id].__mine||"")}"><button class="btn" id="checkbtn" type="button">Check</button></div>${hide?`<button class="btn ghost" id="giveup" type="button">Just show me</button>`:""}<div id="fb"></div></div>`;
+    html += `<div class="attempt"><label for="mine" style="font-weight:600">Your answer for ${a.label.charAt(0).toLowerCase()+a.label.slice(1)}${a.unit?` (${a.unit})`:""}</label><div class="row"><input id="mine" type="text" inputmode="decimal" autocomplete="off" value="${esc(state[c.id].__mine||"")}"><button class="btn" id="checkbtn" type="button">Check</button></div>${hide?`<button class="btn ghost" id="giveup" type="button">Just show me</button>`:""}<div id="fb"></div></div>`;
   }
   if (hide){
     html += `<div class="answer"><p class="hidden-ans"><span class="q">?</span><span>Work it out on paper or your calculator, then type your answer above and hit Check.</span></p></div>`;
@@ -1196,12 +1544,57 @@ const GEN = {
   },
   vd(){
     const [s,lo,hi,kind]=pick([["1.5",4,8,"3"],["2.5",10,20,"5"],["4",18,28,"5"],["6",25,40,"5"],["10",32,45,"5"]]), ib=ri(lo,hi), L=ri(10,50);
-    return {v:{size:s,ib,L,kind}, text:`A ${s} mm² twin and earth (${MVAM[s]} mV/A/m) carries ${ib} A over ${L} m. What's the voltage drop in volts?`};
+    return {v:{cable:"te",phase:"1",size:s,ib,L,kind}, text:`A ${s} mm² twin and earth (${MVAM[s]} mV/A/m) carries ${ib} A over ${L} m. What's the voltage drop in volts?`};
   },
   cable(){
-    const ib=ri(10,45), In=RATINGS.find(r=>r>=ib), ca=pick(["1","1","0.94","0.87"]), cg=pick(["0.8","0.7","0.65"]), ci=pick(["1","1","0.88","0.78"]);
-    const fs=[["Ca",ca],["Cg",cg],["Ci",ci]].filter(x=>x[1]!=="1");
-    return {v:{ib,In:String(In),ca,cg,ci,cc:"1",method:"C"}, text:`Ib is ${ib} A and you've picked a ${In} A MCB. Correction factors: ${fs.map(x=>x[0]+" = "+x[1]).join(", ")}. What's the minimum tabulated rating It?`};
+    const ib=ri(10,45), In=RATINGS.find(r=>r>=ib), temp=pick([30,30,35,40]), n=pick([2,3,4]), ci=pick(["1","1","0.88","0.78"]);
+    const ca=CA_DATA.pvc[temp], cg=CG_DATA.bunched[n-1];
+    const fs=[["Ca",ca],["Cg",cg],["Ci",num(ci)]].filter(x=>x[1]!==1);
+    return {v:{ib,In:String(In),cable:"te",phase:"1",method:"C",temp:String(temp),arr:"bunched",n:String(n),ci,cc:"1"}, text:`Ib is ${ib} A and you've picked a ${In} A MCB. Correction factors: ${fs.map(x=>x[0]+" = "+tidy(x[1])).join(", ")}. What's the minimum tabulated rating It?`};
+  },
+  series(){
+    const mode=pick(["series","parallel"]), n=ri(2,3), rs=shuffle([2,4,5,6,8,10,12,15,20,30,47,100]).slice(0,n);
+    const list=rs.join(", ").replace(/, (\d+)$/," and $1");
+    return {v:{mode,a:rs[0],b:rs[1],c:n>2?rs[2]:NaN,d:NaN,V:NaN}, text:`Resistors of ${list} Ω are connected in ${mode}. What's the total resistance?`};
+  },
+  tt(){
+    const idn=pick(["30","30","100","300"]);
+    if (Math.random()<0.5) return {v:{idn,ra:NaN}, text:`What's the maximum earth electrode resistance RA allowed with a ${idn} mA RCD on a TT system (RA × IΔn ≤ 50 V)?`};
+    const ra=ri(20,250);
+    return {v:{idn,ra}, text:`A TT installation has a ${idn} mA RCD and the earth electrode measures ${ra} Ω. What's the touch voltage RA × IΔn?`};
+  },
+  zscorr(){
+    const ze=pick([0.2,0.35,0.35,0.8]), r12=rd(rnd(0.2,1.0),2), zs=rd(ze+r12,2), In=pick([6,10,16,20,32]);
+    return {v:{zs,ze,type:"B",In:String(In)}, text:`You measure Zs as ${zs} Ω at the furthest point and Ze is ${ze} Ω. Correct Zs to working temperature using the 1.20 multiplier.`};
+  },
+  maxlen(){
+    for (;;){
+      const cab=pick(["1.5/1.0","2.5/1.5","2.5/1.5","4/1.5","6/2.5"]), ze=pick([0.35,0.35,0.8]), In=pick([6,10,16,20,32]), max=Math.round(21850/(5*In))/100;
+      if (max<=ze+0.15) continue;
+      return {v:{cab,ze,type:"B",In:String(In),ib:NaN,kind:"5"}, text:`A B${In} radial is wired in ${cab} mm² twin and earth (R1 + R2 = ${TE_R12[cab]} mΩ/m). Ze is ${ze} Ω and the maximum Zs is ${fx(max,2)} Ω. Using the 1.20 multiplier, what's the longest the circuit can be?`};
+    }
+  },
+  demand(){
+    const light=pick([800,1000,1200,1500]), sockN=pick([1,2,2,3]), cook=pick([0,8,10,12]), sh=pick([0,8.5,9.5,10.5]), imm=pick([0,3]);
+    if (!cook && !sh && !imm) return GEN.demand();
+    const bits=[`${light} W of lighting`, `${sockN} × 32 A socket circuit${sockN>1?"s":""}`];
+    if (cook) bits.push(`a ${cook} kW cooker (control unit with a socket)`); if (sh) bits.push(`a ${sh} kW shower`); if (imm) bits.push(`a ${imm} kW immersion heater`);
+    return {v:{light,sockN,sockA:32,sockB:32,cook:cook||NaN,cookSock:true,sh1:sh||NaN,sh2:NaN,sh3:NaN,imm:imm||NaN,store:NaN,heat:NaN,ev:NaN,fuse:"100"}, tables:["diversity"],
+      text:`A house has ${bits.join(", ").replace(/, ([^,]*)$/," and $1")}. Using the On-Site Guide diversity allowances, what's the maximum demand in amps?`};
+  },
+  threeph(){
+    const pf=pick([1,0.85,0.8,0.9]);
+    if (Math.random()<0.6){ const P=pick([3,5.5,7.5,9,11,15,18.5,22]);
+      return {v:{P,I:NaN,VL:400,pf}, text:`A balanced three-phase load of ${P} kW runs on 400 V with a power factor of ${pf}. What's the line current?`}; }
+    const I=ri(8,40);
+    return {v:{P:NaN,I,VL:400,pf}, text:`A balanced three-phase load draws ${I} A per line at 400 V, power factor ${pf}. What's the power in kW?`};
+  },
+  pf(){
+    const I=ri(4,30);
+    if (Math.random()<0.5){ const p=pick([0.7,0.75,0.8,0.85,0.9]);
+      return {v:{V:230,I,pfv:p,P:NaN}, text:`A motor draws ${I} A at 230 V with a power factor of ${p}. What's the true power in watts?`}; }
+    const P=Math.round(230*I*pick([0.65,0.7,0.75,0.8,0.85,0.9])/10)*10;
+    return {v:{V:230,I,pfv:NaN,P}, text:`A load draws ${I} A at 230 V and uses ${P} W of true power. What's the power factor?`};
   },
   adiabatic(){
     const zs=rd(rnd(0.4,1.4),2), I=Math.round(230/zs), t=pick([0.1,0.1,0.4]);
@@ -1215,10 +1608,6 @@ const GENL = {
   r1r2(){
     const [l,c]=pick([["1.5","1"],["2.5","1.5"],["2.5","1.5"],["4","1.5"],["6","2.5"],["10","4"]]), L=ri(8,45);
     return {v:{line:l,cpc:c,L,hot:false,meas:NaN}, tables:["res"], text:`A ${l}/${c} mm² twin and earth radial is ${L} m long. Look up the resistances and work out the R1 + R2 you'd expect at 20°C.`};
-  },
-  vd(){
-    const [s,lo,hi,kind]=pick([["1.5",4,8,"3"],["2.5",10,20,"5"],["4",18,28,"5"],["6",25,40,"5"],["10",32,45,"5"]]), ib=ri(lo,hi), L=ri(10,50);
-    return {v:{size:s,ib,L,kind}, tables:["cable"], text:`A ${s} mm² twin and earth carries ${ib} A over ${L} m. Look up its mV/A/m. What's the voltage drop in volts?`};
   },
   zs(){
     const t=ri(0,2);
@@ -1235,16 +1624,30 @@ const GENL = {
     const sys=pick(["TN-C-S","TN-S"]);
     return {v:{U:230,Z:ZE_DECL[sys],icn:"6000"}, tables:["ze"], text:`Using the typical declared Ze for a ${sys} supply, what's the prospective earth fault current in amps?`};
   },
+  vd(){
+    const key=pick(["te","te","singles","multi","swa"]), d=CABLE_DATA[key], ph=pick(d.phases), i=ri(1,d.sizes.length-2), s=d.sizes[i];
+    const m0=Object.keys(d.methods)[0], rating=d.methods[m0][ph][i], ib=Math.max(2,Math.round(rating*rnd(0.5,0.9))), L=ri(10,60);
+    return {v:{cable:key,phase:ph,size:s,ib,L,kind:"5"}, tables:[d.table],
+      text:`A ${s} mm² ${d.short} cable, ${ph==="3"?"three-phase":"single-phase"}, carries ${ib} A over ${L} m. Look up its mV/A/m. What's the voltage drop in volts?`};
+  },
   cable(){
     for (;;){
-      const ib=ri(10,40), In=RATINGS.find(r=>r>=ib), temp=pick([25,30,35,40]), n=pick([1,2,2,3,4]);
-      const ca={25:"1.03",30:"1",35:"0.94",40:"0.87"}[temp], cg={1:"1",2:"0.8",3:"0.7",4:"0.65"}[n];
-      if (ca==="1" && cg==="1") continue;
-      const It=In/(num(ca)*num(cg)), size=SIZES.find(s=>IT.C[s]>=It);
-      if (!size) continue;
-      const v={ib,In:String(In),ca,cg,ci:"1",cc:"1",method:"C"}, r=CALC("cable").compute(v);
-      return {custom:{label:"Cable size", value:num(size), unit:"mm²", dp:size.includes(".")?1:0}, tables:["ca","cg","cable"], steps:r.steps,
-        text:`Ib is ${ib} A on a ${In} A Type B MCB. The twin and earth is clipped direct (Method C) in an ambient of ${temp}°C, ${n===1?"not grouped with anything":`bunched with ${n-1} other circuit${n>2?"s":""}`}. Look up Ca, Cg and the current ratings. What's the smallest cable size that will do?`};
+      const key=pick(["te","te","singles","multi","swa"]), d=CABLE_DATA[key], ph=pick(d.phases), ms=Object.keys(d.methods), m=pick(ms);
+      const ib=ri(8,60), In=RATINGS.find(r=>r>=ib), temp=pick([25,30,35,40]), n=pick([1,2,2,3,4]);
+      if (temp===30 && n===1) continue;
+      const v={ib,In:String(In),cable:key,phase:ph,method:m,temp:String(temp),arr:"bunched",n:String(n),ci:"1",cc:"1"}, r=CALC("cable").compute(v);
+      if (r.error || !r.pick) continue;
+      const how=d.methods[m].name.replace(/^Method \w+: /,"");
+      return {custom:{label:"Cable size", value:num(r.pick), unit:"mm²", dp:r.pick.includes(".")?1:0}, tables:["ca","cg",d.table], steps:r.steps,
+        text:`Ib is ${ib} A on a ${In} A breaker. The cable is ${d.short}${d.phases.length>1?`, ${ph==="3"?"three-phase":"single-phase"}`:""}, ${how} (${d.methods[m].name.replace(/:.*/,"")}), in an ambient of ${temp}°C, ${n===1?"not grouped with anything":`bunched with ${n-1} other circuit${n>2?"s":""}`}. Look up the factors and ratings. What's the smallest cable size that will do?`};
+    }
+  },
+  maxlen(){
+    for (;;){
+      const cab=pick(["1.5/1.0","2.5/1.5","2.5/1.5","4/1.5","6/2.5"]), sys=pick(["TN-C-S","TN-C-S","TN-S"]), ze=ZE_DECL[sys], In=pick([6,10,16,20,32]), max=Math.round(21850/(5*In))/100;
+      if (max<=ze+0.15) continue;
+      return {v:{cab,ze,type:"B",In:String(In),ib:NaN,kind:"5"}, tables:["zsmax","res","ze"],
+        text:`A B${In} radial on a ${sys} supply is wired in ${cab} mm² twin and earth. Look up the max Zs, the typical Ze and R1 + R2 per metre. Using the 1.20 multiplier, what's the longest the circuit can be?`};
     }
   },
   adiabatic(){
@@ -1399,7 +1802,7 @@ function renderQuizPlay(){
     html += `</div>`;
   } else {
     html += `<div class="qbox"><span class="chip">${q.look?"Table lookup":"Sum"} · ${c?esc(c.title):""}</span><p class="qt">${q.text}</p>${q.tables?lookupsHTML(q.tables):""}
-      <div class="attempt"><label for="qa" class="lbl2">Your answer (${q.ans.unit})</label><div class="row"><input id="qa" type="text" inputmode="decimal" autocomplete="off" value="${a?esc(a.given):""}"${a?" disabled":""}>${a?"":`<button class="btn" id="qcheck" type="button">Check</button>`}</div>${a?"":`<button class="btn ghost" id="qshow" type="button">Show me how</button>`}</div>`;
+      <div class="attempt"><label for="qa" class="lbl2">Your answer${q.ans.unit?` (${q.ans.unit})`:""}</label><div class="row"><input id="qa" type="text" inputmode="decimal" autocomplete="off" value="${a?esc(a.given):""}"${a?" disabled":""}>${a?"":`<button class="btn" id="qcheck" type="button">Check</button>`}</div>${a?"":`<button class="btn ghost" id="qshow" type="button">Show me how</button>`}</div>`;
     if (a){
       const hint = a.ok||a.given===""||!Number.isFinite(num(a.given)) ? "" : slipHint(num(a.given), q.ans.value);
       html += `<div class="verdict ${a.ok?"pass":"fail"} feedback why"><span class="big">${a.ok?"Nailed it ⚡":(a.given===""?"Here's how":"Not quite")}</span>${a.ok?"":`The answer is <b>${fx(q.ans.value,q.ans.dp)} ${q.ans.unit}</b>. ${hint}`}</div>

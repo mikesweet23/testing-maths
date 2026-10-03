@@ -13,10 +13,19 @@ Guided calculators for 2nd-year electrical apprentices. Each sum explains what i
 - Voltage drop
 - Cable sizing with correction factors
 - Adiabatic equation
+- Series and parallel resistance
+- Earth electrode for TT systems (RA × IΔn ≤ 50 V)
+- Correcting a measured Zs to working temperature
+- Maximum cable length (Zs and voltage drop)
+- Maximum demand and diversity (On-Site Guide)
+- Three-phase power and current
+- Power factor and kVA
+
+Cable sizing and voltage drop cover twin and earth, PVC singles, PVC multicore and XLPE SWA, single and three-phase, with the installation methods from BS 7671 Appendix 4. Cable data lives in `tables.js` (`CABLE_DATA`) and feeds both the calculators and the Tables tab.
 
 ## Tables
 
-The **Tables** tab has the look-up data apprentices would normally find in BS 7671, the On-Site Guide and GN3: conductor resistances, max Zs (Table 41.3), disconnection times, typical Ze, RCD values, insulation resistance minimums, Table 4D5 cable ratings and voltage drop, correction factors (Ca, Cg, Ci, Cc), voltage drop limits, k values, bonding sizes and unit conversions. Every table says where it lives in the real books. Each calculator links to the tables it uses. The data is in `tables.js`.
+The **Tables** tab has the look-up data apprentices would normally find in BS 7671, the On-Site Guide and GN3: installation reference methods, current ratings for twin and earth, singles, multicore and SWA, diversity, AC and three-phase facts, conductor resistances, max Zs (Table 41.3), disconnection times, typical Ze, RCD values, insulation resistance minimums, Table 4D5 cable ratings and voltage drop, correction factors (Ca, Cg, Ci, Cc), voltage drop limits, k values, bonding sizes and unit conversions. Every table says where it lives in the real books. Each calculator links to the tables it uses. The data is in `tables.js`.
 
 ## Quiz and progress
 

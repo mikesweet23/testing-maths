@@ -1,7 +1,7 @@
 // Caches the app so it works offline on site.
 // TO RELEASE AN UPDATE: change VERSION here AND APP_VERSION in index.html to the same new value.
 // Phones that have the app open will then show a "New version ready" banner.
-const VERSION = "1.2.0";
+const VERSION = "1.3.0";
 const CACHE = "testing-maths-" + VERSION;
 const FILES = ["./", "./index.html", "./questions.js", "./tables.js", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png"];
 
