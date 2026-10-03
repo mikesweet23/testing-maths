@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Testing Maths</title>
+<meta name="description" content="Guided calculators for electrical apprentices: what each testing sum is for, where the numbers come from, and how to key it into a calculator.">
+<meta name="theme-color" content="#1E5AA0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Testing Maths">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1EF; --surface:#FFFFFF; --ink:#1C2321; --muted:#56615D; --line:#D3D9D6;
+  --brown:#7A4A26; --blue:#1E5AA0; --green:#2F7D3A; --yellow:#E8B800;
+  --pass:#2F7D3A; --passbg:#E5F2E7; --fail:#B3261E; --failbg:#FBE7E5; --info:#1E5AA0; --infobg:#E6EEF8;
+  --key:#2A3330; --keyink:#F4F6F5; --opkey:#DDE2DF; --opink:#1C2321;
+  --sans:"Barlow", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --cond:"Barlow Condensed", "Arial Narrow", "Barlow", sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141918; --surface:#1D2422; --ink:#E8EDEB; --muted:#9DA9A4; --line:#313B38;
+    --brown:#C98B5B; --blue:#7AABE6; --green:#72C27D; --yellow:#F0C93A;
+    --pass:#72C27D; --passbg:#1D3322; --fail:#F08A80; --failbg:#3A1F1C; --info:#7AABE6; --infobg:#1B2A3D;
+    --key:#E3E8E6; --keyink:#1C2321; --opkey:#38433F; --opink:#E8EDEB;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141918; --surface:#1D2422; --ink:#E8EDEB; --muted:#9DA9A4; --line:#313B38;
+  --brown:#C98B5B; --blue:#7AABE6; --green:#72C27D; --yellow:#F0C93A;
+  --pass:#72C27D; --passbg:#1D3322; --fail:#F08A80; --failbg:#3A1F1C; --info:#7AABE6; --infobg:#1B2A3D;
+  --key:#E3E8E6; --keyink:#1C2321; --opkey:#38433F; --opink:#E8EDEB;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* Conductor-colour stripe: brown line, blue neutral, green/yellow CPC */
+.stripe{height:8px;display:grid;grid-template-columns:1fr 1fr 1fr}
+.stripe i:nth-child(1){background:var(--brown)}
+.stripe i:nth-child(2){background:var(--blue)}
+.stripe i:nth-child(3){background:repeating-linear-gradient(135deg,var(--green) 0 10px,var(--yellow) 10px 20px)}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg)}
+.bar{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-bottom:1px solid var(--line);max-width:760px;margin:0 auto}
+.bar h1{font-family:var(--cond);font-weight:700;font-size:1.35rem;margin:0;letter-spacing:.01em;line-height:1.1;flex:1}
+.back{border:0;background:none;padding:.35rem .2rem;color:var(--blue);font-weight:600;cursor:pointer;white-space:nowrap}
+.back[hidden]{display:none}
+
+main{max-width:760px;margin:0 auto;padding:1rem 1rem 3rem}
+
+/* Home */
+.intro{font-size:1.05rem;margin:.4rem 0 1.4rem;max-width:62ch}
+.intro strong{font-weight:600}
+.group{margin:0 0 1.6rem}
+.group h2{font-family:var(--cond);font-size:1.5rem;margin:0 0 .15rem}
+.group p{margin:0 0 .6rem;color:var(--muted);font-size:.95rem}
+.calc-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.calc-list li{border-bottom:1px solid var(--line)}
+.calc-list a{display:grid;grid-template-columns:2.2rem 1fr auto;align-items:center;gap:.6rem;padding:.8rem .2rem;text-decoration:none;color:inherit}
+.calc-list .n{font-family:var(--cond);font-weight:700;font-size:1.3rem;color:var(--muted);text-align:center}
+.calc-list .t{font-weight:600;display:block}
+.calc-list .s{color:var(--muted);font-size:.92rem;display:block;line-height:1.35}
+.calc-list .f{font-family:var(--cond);font-size:1rem;color:var(--blue);white-space:nowrap}
+@media (max-width:420px){.calc-list .f{display:none}.calc-list a{grid-template-columns:2.2rem 1fr}}
+
+/* Calculator page */
+.lede{font-size:1.08rem;margin:.2rem 0 1rem}
+.formula{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--blue);border-radius:6px;padding:.9rem 1rem;margin:0 0 1.2rem}
+.formula .eq{font-family:var(--cond);font-weight:700;font-size:1.65rem;line-height:1.25;display:block}
+.formula .eq + .eq{margin-top:.25rem}
+.formula .words{display:block;color:var(--muted);margin-top:.35rem;font-size:.95rem}
+sub{font-size:.7em}
+
+details.explain{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:0 0 .6rem}
+details.explain summary{cursor:pointer;padding:.75rem 1rem;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.explain summary::-webkit-details-marker{display:none}
+details.explain summary::after{content:"+";font-size:1.3rem;color:var(--muted);line-height:1}
+details.explain[open] summary::after{content:"–"}
+details.explain .body{padding:0 1rem .9rem}
+details.explain .body p{margin:0 0 .6rem}
+details.explain .body p:last-child{margin-bottom:0}
+
+.sources{list-style:none;margin:0;padding:0}
+.sources li{display:grid;grid-template-columns:auto 1fr;gap:.6rem;align-items:start;padding:.45rem 0;border-top:1px dashed var(--line)}
+.sources li:first-child{border-top:0}
+.tag{font-size:.75rem;font-weight:700;padding:.15rem .45rem;border-radius:3px;white-space:nowrap;margin-top:.2rem}
+.tag.tester{background:var(--brown);color:#fff}
+.tag.site{background:var(--blue);color:#fff}
+.tag.tables{background:var(--green);color:#fff}
+.tag.design{background:var(--yellow);color:#1C2321}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag.tester,:root:not([data-theme="light"]) .tag.site,:root:not([data-theme="light"]) .tag.tables{color:#141918}}
+:root[data-theme="dark"] .tag.tester,:root[data-theme="dark"] .tag.site,:root[data-theme="dark"] .tag.tables{color:#141918}
+
+h3.sec{font-family:var(--cond);font-size:1.35rem;margin:1.6rem 0 .5rem}
+
+.inputs{display:grid;gap:.85rem;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:1rem}
+.field label{display:block;font-weight:600;margin-bottom:.2rem}
+.field .row{display:flex;align-items:center;gap:.5rem}
+.field input,.field select{width:100%;min-height:46px;padding:.5rem .7rem;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);font-size:1.05rem}
+.field input:focus,.field select:focus{border-color:var(--blue);outline:none}
+.field .unit{min-width:2.6rem;color:var(--muted);font-weight:600}
+.field .hint{font-size:.85rem;color:var(--muted);margin-top:.25rem;line-height:1.35}
+.field.check label{display:flex;gap:.6rem;align-items:center;font-weight:500}
+.field.check input{width:22px;height:22px;min-height:0;accent-color:var(--blue)}
+
+.mode{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:1rem 0 .4rem;padding:.7rem 1rem;border:1.5px dashed var(--blue);border-radius:6px}
+.mode span{font-weight:600}
+.mode small{display:block;color:var(--muted);font-weight:400}
+.switch{position:relative;width:52px;height:30px;flex:none}
+.switch input{opacity:0;width:100%;height:100%;position:absolute;margin:0;cursor:pointer;z-index:1}
+.switch .track{position:absolute;inset:0;background:var(--line);border-radius:15px;transition:background .15s}
+.switch .track::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.switch input:checked + .track{background:var(--blue)}
+.switch input:checked + .track::after{transform:translateX(22px)}
+.switch input:focus-visible + .track{outline:3px solid var(--blue);outline-offset:2px}
+
+.attempt{display:grid;gap:.5rem;margin:.6rem 0 0}
+.attempt .row{display:flex;gap:.5rem}
+.attempt input{flex:1;min-height:46px;padding:.5rem .7rem;border:1.5px solid var(--line);border-radius:6px;background:var(--surface);font-size:1.05rem}
+.btn{min-height:46px;padding:.5rem 1rem;border:0;border-radius:6px;background:var(--blue);color:#fff;font-weight:600;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#141918}}
+:root[data-theme="dark"] .btn{color:#141918}
+.btn.ghost{background:none;color:var(--blue);border:1.5px solid var(--blue)}
+
+.answer{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:1rem;margin-top:.8rem}
+.answer .lbl{color:var(--muted);font-size:.95rem}
+.answer .val{font-family:var(--cond);font-weight:700;font-size:2.4rem;line-height:1.1}
+.answer .val .u{font-size:1.3rem;margin-left:.25rem;color:var(--muted)}
+.answer .extra{margin-top:.3rem}
+.verdict{margin-top:.6rem;padding:.6rem .8rem;border-radius:6px;font-weight:500;line-height:1.4}
+.verdict.pass{background:var(--passbg);color:var(--pass)}
+.verdict.fail{background:var(--failbg);color:var(--fail)}
+.verdict.info{background:var(--infobg);color:var(--info)}
+.verdict b{font-weight:700}
+.error{color:var(--fail);font-weight:600}
+.feedback{padding:.6rem .8rem;border-radius:6px;font-weight:600}
+.hidden-ans{color:var(--muted);font-style:italic}
+
+/* Calculator keys: the memorable bit */
+.keyset{margin:.2rem 0 1rem}
+.keyset .cap{font-size:.92rem;color:var(--muted);margin:0 0 .35rem}
+.keys{display:flex;flex-wrap:wrap;gap:6px;padding:.75rem;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.k{display:inline-flex;align-items:center;justify-content:center;min-width:2.5rem;height:2.5rem;padding:0 .55rem;border-radius:8px;background:var(--key);color:var(--keyink);font-weight:600;font-size:1.05rem;box-shadow:0 3px 0 rgba(0,0,0,.28);font-variant-numeric:tabular-nums}
+.k.op{background:var(--opkey);color:var(--opink)}
+.k.eq{background:var(--blue);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .k.eq{color:#141918}}
+:root[data-theme="dark"] .k.eq{color:#141918}
+
+ol.steps{margin:0;padding-left:1.4rem}
+ol.steps li{margin:0 0 .55rem;padding-left:.2rem}
+ol.steps li b{font-variant-numeric:tabular-nums}
+ul.tips{margin:0;padding-left:1.2rem}
+ul.tips li{margin:0 0 .45rem}
+
+.pager{display:flex;justify-content:space-between;gap:.6rem;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line)}
+.pager a{color:var(--blue);font-weight:600;text-decoration:none;max-width:48%}
+.pager a small{display:block;color:var(--muted);font-weight:400}
+.pager .next{text-align:right;margin-left:auto}
+
+table.ref{border-collapse:collapse;width:100%;font-size:.92rem;margin:.4rem 0}
+table.ref th,table.ref td{border:1px solid var(--line);padding:.3rem .45rem;text-align:left}
+table.ref th{background:var(--bg)}
+.scroll{overflow-x:auto}
+
+footer{max-width:760px;margin:0 auto;padding:0 1rem 2rem;color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="stripe" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="bar">
+    <button class="back" id="back" hidden>‹ All sums</button>
+    <h1 id="title">Testing Maths</h1>
+  </div>
+</header>
+<main id="app"></main>
+<footer>A learning aid for apprentices. Values are based on BS 7671 (18th Edition), the On-Site Guide and Guidance Note 3. Always check against the current edition you're using at college and on site, and ask your supervisor if a result doesn't look right.</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const num = v => { if (v === "" || v === null || v === undefined) return NaN; return parseFloat(String(v).replace(",", ".")); };
+const fx = (n, dp) => Number.isFinite(n) ? n.toFixed(dp) : "–";
+const tidy = n => { if (!Number.isFinite(n)) return "–"; const r = Math.round(n * 10000) / 10000; return String(r); };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- reference data ---------- */
+// Copper conductor resistance at 20°C, mΩ per metre (OSG / GN3)
+const RES = {"1":18.10,"1.5":12.10,"2.5":7.41,"4":4.61,"6":3.08,"10":1.83,"16":1.15};
+const SIZES = ["1","1.5","2.5","4","6","10","16"];
+// Flat twin & earth, 70°C thermoplastic, BS 7671 Table 4D5
+const MVAM = {"1":44,"1.5":29,"2.5":18,"4":11,"6":7.3,"10":4.4,"16":2.8};
+const IT = {
+  C:   {"1":16,"1.5":20,"2.5":27,"4":37,"6":47,"10":64,"16":85},
+  "100":{"1":13,"1.5":16,"2.5":21,"4":27,"6":34,"10":45,"16":57},
+  "103":{"1":8,"1.5":10,"2.5":13.5,"4":17.5,"6":23.5,"10":32,"16":42.5}
+};
+const METHOD_NAMES = {C:"Method C — clipped direct to a surface", "100":"Method 100 — above a plasterboard ceiling, insulation up to 100 mm", "103":"Method 103 — in a stud wall with insulation, not touching the inner wall"};
+const MULT = {B:5, C:10, D:20};
+const RATINGS = [6,10,16,20,25,32,40,50,63];
+
+const sizeOpts = SIZES.map(s => ({v:s, l:s + " mm²"}));
+
+/* ---------- calculators ---------- */
+const CALCS = [
+
+/* 1 OHM'S LAW */
+{
+  id:"ohm", group:"basics", title:"Ohm's law and power", short:"The sum everything else is built on", fshort:"V = I × R",
+  lede:"Fill in any two boxes and leave the other two empty. The calculator works out the rest and shows you how.",
+  formula:[`V = I × R`,`P = V × I`],
+  words:"Voltage equals current times resistance. Power equals voltage times current.",
+  what:`<p>Ohm's law links voltage (V, in volts), current (I, in amps) and resistance (R, in ohms). The power formula adds watts (P). Nearly every testing sum is one of these in disguise.</p><p>To rearrange, cover up the one you want: V = I × R, so I = V ÷ R and R = V ÷ I.</p>`,
+  why:`<p>You use it to work out a circuit's design current (I<sub>b</sub> = P ÷ V) before sizing a cable, to sense-check readings, and to understand the big idea behind fault protection: <b>low resistance means high current</b>. That's why a low Z<sub>s</sub> makes a breaker trip fast.</p>`,
+  sources:[
+    ["site","Voltage: use 230 V for UK single-phase sums (this is U<sub>0</sub>, line to earth)."],
+    ["design","Power: from the appliance rating plate or the design drawings, in watts. 3 kW = 3000 W."],
+    ["tester","Measured current, voltage or resistance: from your multimeter, clamp meter or tester."]
+  ],
+  inputs:[
+    {id:"V", label:"Voltage (V)", unit:"V", def:"230", hint:"Usually 230 V."},
+    {id:"I", label:"Current (I)", unit:"A", def:"", hint:"Leave empty if this is what you want to find."},
+    {id:"R", label:"Resistance (R)", unit:"Ω", def:"", hint:"Leave empty if this is what you want to find."},
+    {id:"P", label:"Power (P)", unit:"W", def:"3000", hint:"e.g. a 3 kW immersion heater is 3000 W."}
+  ],
+  compute(v){
+    const have = ["V","I","R","P"].filter(k => Number.isFinite(v[k]));
+    if (have.length !== 2) return {error:"Fill in exactly two of the four boxes and leave the other two empty."};
+    let {V,I,R,P} = v; const steps=[]; const keys=[]; let first;
+    const key = have.join("");
+    if (key==="VI"){ R=V/I; P=V*I; first={k:"R",val:R};
+      steps.push(`R = V ÷ I = ${tidy(V)} ÷ ${tidy(I)} = <b>${fx(R,2)} Ω</b>`);
+      steps.push(`P = V × I = ${tidy(V)} × ${tidy(I)} = <b>${fx(P,0)} W</b>`);
+      keys.push({cap:"Resistance", seq:[tidy(V),"÷",tidy(I),"="]});
+      keys.push({cap:"Power", seq:[tidy(V),"×",tidy(I),"="]});
+    } else if (key==="VR"){ I=V/R; P=V*I; first={k:"I",val:I};
+      steps.push(`I = V ÷ R = ${tidy(V)} ÷ ${tidy(R)} = <b>${fx(I,2)} A</b>`);
+      steps.push(`P = V × I = ${tidy(V)} × ${fx(I,2)} = <b>${fx(P,0)} W</b>`);
+      keys.push({cap:"Current", seq:[tidy(V),"÷",tidy(R),"="]});
+    } else if (key==="VP"){ I=P/V; R=V/I; first={k:"I",val:I};
+      steps.push(`I = P ÷ V = ${tidy(P)} ÷ ${tidy(V)} = <b>${fx(I,2)} A</b> — this is the design current I<sub>b</sub>.`);
+      steps.push(`R = V ÷ I = ${tidy(V)} ÷ ${fx(I,2)} = <b>${fx(R,2)} Ω</b> (the resistance of the element when hot).`);
+      keys.push({cap:"Current", seq:[tidy(P),"÷",tidy(V),"="]});
+    } else if (key==="IR"){ V=I*R; P=V*I; first={k:"V",val:V};
+      steps.push(`V = I × R = ${tidy(I)} × ${tidy(R)} = <b>${fx(V,2)} V</b>`);
+      steps.push(`P = V × I = ${fx(V,2)} × ${tidy(I)} = <b>${fx(P,0)} W</b>`);
+      keys.push({cap:"Voltage", seq:[tidy(I),"×",tidy(R),"="]});
+    } else if (key==="IP"){ V=P/I; R=V/I; first={k:"V",val:V};
+      steps.push(`V = P ÷ I = ${tidy(P)} ÷ ${tidy(I)} = <b>${fx(V,2)} V</b>`);
+      steps.push(`R = V ÷ I = ${fx(V,2)} ÷ ${tidy(I)} = <b>${fx(R,2)} Ω</b>`);
+      keys.push({cap:"Voltage", seq:[tidy(P),"÷",tidy(I),"="]});
+    } else if (key==="RP"){ I=Math.sqrt(P/R); V=I*R; first={k:"I",val:I};
+      steps.push(`From P = I² × R, rearrange: I = √(P ÷ R) = √(${tidy(P)} ÷ ${tidy(R)}) = <b>${fx(I,2)} A</b>`);
+      steps.push(`V = I × R = ${fx(I,2)} × ${tidy(R)} = <b>${fx(V,2)} V</b>`);
+      keys.push({cap:"Current", seq:["√","(",tidy(P),"÷",tidy(R),")","="]});
+    }
+    const units={V:"V",I:"A",R:"Ω",P:"W"}, names={V:"Voltage",I:"Current",R:"Resistance",P:"Power"};
+    const dps={V:1,I:2,R:2,P:0};
+    const others = ["V","I","R","P"].filter(k=>!have.includes(k) && k!==first.k)
+      .map(k=>`${names[k]}: <b>${fx({V,I,R,P}[k],dps[k])} ${units[k]}</b>`).join("<br>");
+    return {
+      answer:{label:names[first.k], value:first.val, unit:units[first.k], dp:dps[first.k], extra:others},
+      steps, keys,
+      checks: (key==="VP"||key==="IP") ? [{type:"info", text:`If this is a single-phase load, a <b>${fx(I,2)} A</b> design current needs a breaker rated at least that much. Take it to the cable sizing sum next.`}] : []
+    };
+  },
+  tips:[
+    "Use 230 V, not 240 V. The UK nominal voltage has been 230 V since 1995.",
+    "Turn kW into W first: multiply by 1000. 9.5 kW shower = 9500 W.",
+    "Turn mΩ into Ω: divide by 1000. 470 mΩ = 0.47 Ω.",
+    "If the answer looks silly (a kettle drawing 1300 A), you've probably divided the wrong way round."
+  ]
+},
+
+/* 2 R1+R2 */
+{
+  id:"r1r2", group:"dead", step:1, title:"Continuity: R1 + R2", short:"What your continuity reading should be", fshort:"R1+R2",
+  lede:"Work out what R1 + R2 should be for a cable, then compare it with what your tester reads.",
+  formula:[`R<sub>1</sub>+R<sub>2</sub> = (mΩ/m × length) ÷ 1000`],
+  words:"Resistance per metre of line plus CPC, times the length, divided by 1000 to turn milliohms into ohms.",
+  what:`<p>R<sub>1</sub> is the resistance of the line conductor (brown). R<sub>2</sub> is the resistance of the circuit protective conductor, the CPC (green/yellow). Adding them gives the resistance of the loop out along the line and back along the CPC.</p><p>To measure it, you link line and CPC together at one end (usually at the consumer unit) and measure between line and earth at the far end with a low-resistance ohmmeter.</p>`,
+  why:`<p>It proves the CPC is connected all the way through, so a fault will have a path to earth. It's also half of the Z<sub>s</sub> sum: Z<sub>s</sub> = Z<sub>e</sub> + (R<sub>1</sub>+R<sub>2</sub>). Knowing roughly what to expect means you'll spot a loose terminal straight away, because the reading will be higher than it should be.</p>`,
+  sources:[
+    ["design","Cable sizes: printed on the cable sheath or shown on the drawings. Twin and earth \"2.5/1.5\" means 2.5 mm² line, 1.5 mm² CPC."],
+    ["design","Length: from the drawings or measured on site, in metres, from the board to the furthest point."],
+    ["tables","Resistance per metre: On-Site Guide Appendix I or GN3 table of conductor resistances at 20°C."],
+    ["tester","Measured R1+R2: low-resistance ohmmeter on your multifunction tester. Null (zero) the leads first."]
+  ],
+  inputs:[
+    {id:"line", label:"Line conductor size", type:"select", opts:sizeOpts, def:"2.5", hint:"The brown core."},
+    {id:"cpc", label:"CPC size", type:"select", opts:sizeOpts, def:"1.5", hint:"The bare/green-yellow core. Smaller than line in twin and earth."},
+    {id:"L", label:"Cable length", unit:"m", def:"20", hint:"One way, from the board to the furthest point."},
+    {id:"hot", label:"Show the value at working temperature (× 1.20)", type:"check", def:false, hint:"Leave off when comparing with a reading you've just taken. Turn on when the sum is for design."},
+    {id:"meas", label:"Your measured reading (optional)", unit:"Ω", def:"", hint:"Type in what your tester shows and the calculator will compare."}
+  ],
+  compute(v){
+    if (!(v.L>0)) return {error:"Enter the cable length in metres."};
+    const rl=RES[v.line], rc=RES[v.cpc], perm=rl+rc;
+    let R = perm*v.L/1000; const cold=R;
+    const steps=[
+      `Look up resistance per metre at 20°C: line ${v.line} mm² = <b>${rl} mΩ/m</b>, CPC ${v.cpc} mm² = <b>${rc} mΩ/m</b>.`,
+      `Add them: ${rl} + ${rc} = <b>${fx(perm,2)} mΩ/m</b>. (Tables often list this combined figure directly.)`,
+      `Multiply by length: ${fx(perm,2)} × ${tidy(v.L)} = <b>${fx(perm*v.L,1)} mΩ</b>.`,
+      `Divide by 1000 to get ohms: ${fx(perm*v.L,1)} ÷ 1000 = <b>${fx(cold,3)} Ω</b>.`
+    ];
+    const seq=[fx(perm,2),"×",tidy(v.L),"÷","1000"];
+    if (v.hot){ R=cold*1.2; steps.push(`Multiply by 1.20 for a cable running at 70°C: ${fx(cold,3)} × 1.20 = <b>${fx(R,3)} Ω</b>.`); seq.push("×","1.2"); }
+    seq.push("=");
+    const keys=[{cap:"Add the two resistances per metre", seq:[String(rl),"+",String(rc),"="]},{cap:"Then the R1+R2 sum", seq}];
+    const checks=[];
+    if (Number.isFinite(v.meas)){
+      const ratio=v.meas/cold;
+      if (ratio<=1.25 || v.meas-cold<=0.05) checks.push({type:"pass", text:`Your reading of <b>${tidy(v.meas)} Ω</b> is close to the expected <b>${fx(cold,2)} Ω</b>. That looks right.`});
+      else checks.push({type:"fail", text:`Your reading of <b>${tidy(v.meas)} Ω</b> is well above the expected <b>${fx(cold,2)} Ω</b>. Check the leads were nulled, the length is right, and look for a loose or poor termination.`});
+    }
+    return {answer:{label:v.hot?"Expected R1+R2 at 70°C":"Expected R1+R2 (cold)", value:R, unit:"Ω", dp:2}, steps, keys, checks};
+  },
+  tips:[
+    "Null your leads before measuring, or you'll add their resistance to every reading.",
+    "Table values are in milliohms (mΩ) per metre. Forgetting to divide by 1000 is the most common mistake.",
+    "Record the highest reading on the circuit, which is usually at the furthest point.",
+    "Remove the temporary link between line and CPC when you're done."
+  ]
+},
+
+/* 3 RING */
+{
+  id:"ring", group:"dead", step:2, title:"Ring final circuit continuity", short:"The three-step ring test and what to expect", fshort:"(r1+r2) ÷ 4",
+  lede:"Enter your three end-to-end readings. The calculator checks them and tells you what each socket should read.",
+  formula:[`At each socket ≈ (r<sub>1</sub> + r<sub>2</sub>) ÷ 4`],
+  words:"Add the line and CPC end-to-end readings, then divide by four.",
+  what:`<p>A ring final circuit leaves the board, goes round every socket, and comes back to the same breaker. The test proves it really is one unbroken loop.</p><p><b>Step 1:</b> at the board, with both ends disconnected, measure end to end on each conductor: line (r<sub>1</sub>), neutral (r<sub>n</sub>) and CPC (r<sub>2</sub>).</p><p><b>Step 2:</b> cross-connect line of one end to neutral of the other, and the same the other way round (the figure of eight). Measure line to neutral at every socket. They should all be about (r<sub>1</sub>+r<sub>n</sub>) ÷ 4.</p><p><b>Step 3:</b> repeat with line and CPC cross-connected. Measure line to earth at every socket. They should all be about (r<sub>1</sub>+r<sub>2</sub>) ÷ 4.</p>`,
+  why:`<p>A broken ring still powers every socket, so nobody notices. But all the current then flows down one leg, which is a 2.5 mm² cable sitting on a 32 A breaker, so it can overheat. This test is the only way to find it.</p><p><b>Why divide by four?</b> Cross-connecting turns the ring into two half-length paths in parallel. Half the length halves the resistance, and two equal paths in parallel halves it again. ½ × ½ = ¼.</p>`,
+  sources:[
+    ["tester","r1, rn, r2: end-to-end readings at the board with the low-resistance ohmmeter, leads nulled."],
+    ["design","Cable sizes: from the sheath print. Normally 2.5/1.5 mm² twin and earth."],
+    ["tester","Socket readings: steps 2 and 3, using a plug-in adaptor or probes at each socket."]
+  ],
+  inputs:[
+    {id:"r1", label:"r1 — line end to end", unit:"Ω", def:"0.52", hint:"Brown to brown at the board."},
+    {id:"rn", label:"rn — neutral end to end", unit:"Ω", def:"0.52", hint:"Blue to blue."},
+    {id:"r2", label:"r2 — CPC end to end", unit:"Ω", def:"0.86", hint:"Green/yellow to green/yellow."},
+    {id:"line", label:"Line size", type:"select", opts:sizeOpts, def:"2.5"},
+    {id:"cpc", label:"CPC size", type:"select", opts:sizeOpts, def:"1.5"}
+  ],
+  compute(v){
+    if (![v.r1,v.rn,v.r2].every(Number.isFinite)) return {error:"Enter all three end-to-end readings."};
+    const diff=Math.abs(v.r1-v.rn), ratioExp=RES[v.cpc]/RES[v.line], ratio=v.r2/v.r1;
+    const ln=(v.r1+v.rn)/4, le=(v.r1+v.r2)/4;
+    const steps=[
+      `Check line and neutral match: ${tidy(v.r1)} − ${tidy(v.rn)} = <b>${fx(diff,2)} Ω</b>. They should be within 0.05 Ω.`,
+      `Check the CPC: a ${v.cpc} mm² CPC with a ${v.line} mm² line should read about <b>${fx(ratioExp,2)} ×</b> r<sub>1</sub> (the ratio of their resistances). ${tidy(v.r2)} ÷ ${tidy(v.r1)} = <b>${fx(ratio,2)}</b>.`,
+      `Step 2 expected at each socket (L–N): (${tidy(v.r1)} + ${tidy(v.rn)}) ÷ 4 = <b>${fx(ln,2)} Ω</b>.`,
+      `Step 3 expected at each socket (L–E): (${tidy(v.r1)} + ${tidy(v.r2)}) ÷ 4 = <b>${fx(le,2)} Ω</b>. The highest step 3 reading is the circuit's R<sub>1</sub>+R<sub>2</sub>.`
+    ];
+    const keys=[
+      {cap:"Line vs neutral difference", seq:[tidy(v.r1),"−",tidy(v.rn),"="]},
+      {cap:"Step 3 expected (L–E)", seq:["(",tidy(v.r1),"+",tidy(v.r2),")","÷","4","="]},
+      {cap:"Step 2 expected (L–N)", seq:["(",tidy(v.r1),"+",tidy(v.rn),")","÷","4","="]}
+    ];
+    const checks=[];
+    checks.push(diff<=0.05
+      ? {type:"pass", text:`Line and neutral are within <b>${fx(diff,2)} Ω</b> of each other. Good.`}
+      : {type:"fail", text:`Line and neutral differ by <b>${fx(diff,2)} Ω</b>, more than 0.05 Ω. Look for a loose connection or a break on one conductor.`});
+    checks.push(Math.abs(ratio-ratioExp)/ratioExp<=0.15
+      ? {type:"pass", text:`The CPC reading is in proportion to the line (ratio ${fx(ratio,2)}, expected about ${fx(ratioExp,2)}).`}
+      : {type:"fail", text:`The CPC ratio is ${fx(ratio,2)} but should be about ${fx(ratioExp,2)}. Check the cable sizes and the CPC terminations.`});
+    checks.push({type:"info", text:`At every socket in step 3 you should see roughly <b>${fx(le,2)} Ω</b>. A reading much higher than that points to a spur or a poor connection at that socket.`});
+    return {answer:{label:"Expected R1+R2 at each socket (step 3)", value:le, unit:"Ω", dp:2, extra:`Expected L–N at each socket (step 2): <b>${fx(ln,2)} Ω</b>`}, steps, keys, checks};
+  },
+  tips:[
+    "Sketch the figure of eight before you start. It's the part most people get wrong.",
+    "Readings should be about the same at every socket. A steady rise towards the middle usually means you've cross-connected the wrong ends.",
+    "Spurs read higher than the ring sockets because they hang off the ring. That's expected.",
+    "Record the highest step 3 reading as R1+R2 on the schedule of test results."
+  ]
+},
+
+/* 4 IR */
+{
+  id:"ir", group:"dead", step:3, title:"Insulation resistance", short:"Readings in parallel and the minimum value", fshort:"1/Rt = 1/R1 + 1/R2",
+  lede:"Enter up to four readings in MΩ. The calculator combines them and checks the total against the minimum.",
+  formula:[`1/R<sub>t</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub> + 1/R<sub>3</sub> …`],
+  words:"One over the total equals one over each reading, added together.",
+  what:`<p>An insulation resistance test puts a high DC voltage (usually 500 V) between conductors, and between conductors and earth, to check the insulation isn't leaking current.</p><p>When you test several circuits at once, or a long circuit, the insulation paths are side by side, which means in parallel. Resistances in parallel combine to give a lower total than any one of them.</p>`,
+  why:`<p>Poor insulation leads to shocks, nuisance RCD tripping and fires. The total for the whole installation can come out lower than you'd expect even if every circuit is fine, and this sum shows you why.</p>`,
+  sources:[
+    ["tester","Readings: your insulation resistance tester, in megohms (MΩ)."],
+    ["tables","Test voltage and minimum: BS 7671 Table 64. For normal 230 V circuits, test at 500 V DC with a minimum of 1 MΩ."],
+    ["site","Before testing: unplug or disconnect anything that could be damaged or give a false reading (dimmers, electronic kit, surge protection)."]
+  ],
+  inputs:[
+    {id:"tv", label:"Circuit type / test voltage", type:"select", def:"500", opts:[
+      {v:"250", l:"SELV / PELV — 250 V DC, min 0.5 MΩ"},
+      {v:"500", l:"Up to 500 V (normal 230 V) — 500 V DC, min 1 MΩ"},
+      {v:"1000", l:"Above 500 V — 1000 V DC, min 1 MΩ"}]},
+    {id:"a", label:"Reading 1", unit:"MΩ", def:"200"},
+    {id:"b", label:"Reading 2", unit:"MΩ", def:"50"},
+    {id:"c", label:"Reading 3", unit:"MΩ", def:"100", hint:"Leave empty if not needed."},
+    {id:"d", label:"Reading 4", unit:"MΩ", def:"", hint:"Leave empty if not needed."}
+  ],
+  compute(v){
+    const rs=["a","b","c","d"].map(k=>v[k]).filter(x=>Number.isFinite(x));
+    if (rs.length<1) return {error:"Enter at least one reading."};
+    if (rs.some(x=>x<=0)) return {error:"Readings must be above zero. A zero reading means a short circuit: find it before going further."};
+    const inv=rs.map(r=>1/r), sum=inv.reduce((s,x)=>s+x,0), Rt=1/sum;
+    const min = v.tv==="250"?0.5:1;
+    const steps=[];
+    rs.forEach((r,i)=>steps.push(`1 ÷ ${tidy(r)} = <b>${fx(1/r,4)}</b>`));
+    if (rs.length>1){
+      steps.push(`Add them: ${inv.map(x=>fx(x,4)).join(" + ")} = <b>${fx(sum,4)}</b>`);
+      steps.push(`Flip it back over: 1 ÷ ${fx(sum,4)} = <b>${fx(Rt,1)} MΩ</b>`);
+    } else steps.push("With one reading there's nothing to combine: the total is the reading.");
+    steps.push(`Sense-check: the total (${fx(Rt,1)} MΩ) is lower than the smallest single reading (${tidy(Math.min(...rs))} MΩ). It always should be.`);
+    const seq=["1","÷","("]; rs.forEach((r,i)=>{ if(i) seq.push("+"); seq.push("1","÷",tidy(r)); }); seq.push(")","=");
+    const checks=[ Rt>=min
+      ? {type:"pass", text:`<b>${fx(Rt,1)} MΩ</b> is above the ${min} MΩ minimum. Pass.`}
+      : {type:"fail", text:`<b>${fx(Rt,2)} MΩ</b> is below the ${min} MΩ minimum. Test each circuit separately to find which one is low.`}];
+    if (Rt>=min && Rt<2) checks.push({type:"info", text:"It passes, but anything under about 2 MΩ is worth testing circuit by circuit to see if one is deteriorating."});
+    return {answer:{label:"Total insulation resistance", value:Rt, unit:"MΩ", dp:1}, steps, keys:[{cap:"Whole sum in one go", seq},{cap:"Or with the x⁻¹ key", seq:rs.flatMap((r,i)=>i?["+",tidy(r),"x⁻¹"]:[tidy(r),"x⁻¹"]).concat(["=","x⁻¹"])}], checks};
+  },
+  tips:[
+    "The total is always lower than the smallest reading. If yours isn't, you've made a slip.",
+    "If the tester shows \">299 MΩ\" or similar, record it like that. It's a pass.",
+    "Test between live conductors joined together and earth, and between line and neutral.",
+    "Never insulation test with sensitive equipment still connected."
+  ]
+},
+
+/* 5 ZS */
+{
+  id:"zs", group:"live", step:4, title:"Earth fault loop impedance: Zs", short:"Will the breaker trip fast enough in a fault?", fshort:"Zs = Ze + R1+R2",
+  lede:"Add Ze and R1+R2, then check the total against the maximum for the breaker.",
+  formula:[`Z<sub>s</sub> = Z<sub>e</sub> + (R<sub>1</sub>+R<sub>2</sub>)`,`Max Z<sub>s</sub> = (0.95 × 230) ÷ I<sub>a</sub>`],
+  words:"The external loop plus the circuit's own loop gives the total. The maximum allowed depends on how much current the breaker needs to trip instantly.",
+  what:`<p>Z<sub>s</sub> is the total resistance (impedance) of the path a fault current takes: from the transformer, along the line conductor to the fault, back along the CPC, and back to the transformer through the earthing.</p><p>Z<sub>e</sub> is the part outside the installation (the supply). R<sub>1</sub>+R<sub>2</sub> is the part inside (your circuit). Add them together for Z<sub>s</sub>.</p>`,
+  why:`<p>When a line touches earthed metalwork, a big current flows and the breaker should trip almost instantly. If Z<sub>s</sub> is too high, the current is too small, the breaker doesn't trip fast enough, and the metalwork stays live. This is the sum that proves the circuit is safe.</p><p><b>Where the maximum comes from:</b> a Type B breaker trips instantly at 5 × its rating, a C at 10 ×, a D at 20 ×. That's I<sub>a</sub>. Ohm's law says Z = V ÷ I, so the maximum Z<sub>s</sub> is the voltage divided by I<sub>a</sub>. The 0.95 allows for the supply voltage being a bit low.</p>`,
+  sources:[
+    ["tester","Ze: measured at the origin with the main earthing conductor disconnected. Isolate first, and reconnect it afterwards."],
+    ["site","Or use the DNO's declared maximum Ze: 0.35 Ω for TN-C-S (PME), 0.8 Ω for TN-S."],
+    ["tester","R1+R2: from your continuity test, or the R1+R2 sum."],
+    ["design","Breaker type and rating: printed on the device, e.g. B32."],
+    ["tables","Maximum Zs: BS 7671 Table 41.3, or the On-Site Guide. This calculator works it out so you can see where the table numbers come from."]
+  ],
+  inputs:[
+    {id:"ze", label:"Ze", unit:"Ω", def:"0.35", hint:"Measured, or 0.35 Ω (TN-C-S) / 0.8 Ω (TN-S) declared."},
+    {id:"r12", label:"R1 + R2", unit:"Ω", def:"0.39", hint:"Your continuity reading."},
+    {id:"type", label:"Breaker type", type:"select", def:"B", opts:[{v:"B",l:"Type B (domestic, trips at 5 × In)"},{v:"C",l:"Type C (motors, trips at 10 × In)"},{v:"D",l:"Type D (high inrush, trips at 20 × In)"}]},
+    {id:"In", label:"Breaker rating", type:"select", def:"32", opts:RATINGS.map(r=>({v:String(r),l:r+" A"}))}
+  ],
+  compute(v){
+    if (![v.ze,v.r12].every(Number.isFinite)) return {error:"Enter Ze and R1+R2."};
+    const In=num(v.In), m=MULT[v.type], Ia=m*In;
+    const zs=v.ze+v.r12, max=0.95*230/Ia, max2=Math.floor(max*100)/100, lim=max2*0.8;
+    const steps=[
+      `Add the outside and inside parts: ${tidy(v.ze)} + ${tidy(v.r12)} = <b>${fx(zs,2)} Ω</b>.`,
+      `Find I<sub>a</sub>, the current that trips a Type ${v.type} instantly: ${m} × ${In} A = <b>${Ia} A</b>.`,
+      `Maximum Z<sub>s</sub>: (0.95 × 230) ÷ ${Ia} = 218.5 ÷ ${Ia} = <b>${fx(max2,2)} Ω</b>. This should match Table 41.3.`,
+      `Apply the 80% rule for comparing with readings taken cold: ${fx(max2,2)} × 0.8 = <b>${fx(lim,2)} Ω</b>.`,
+      `Compare: ${fx(zs,2)} Ω ${zs<=lim?"is below":"is above"} ${fx(lim,2)} Ω.`
+    ];
+    const keys=[
+      {cap:"Zs", seq:[tidy(v.ze),"+",tidy(v.r12),"="]},
+      {cap:"Maximum Zs", seq:["0.95","×","230","÷","(",String(m),"×",String(In),")","="]},
+      {cap:"80% of the maximum", seq:[fx(max2,2),"×","0.8","="]}
+    ];
+    const checks=[ zs<=lim
+      ? {type:"pass", text:`<b>${fx(zs,2)} Ω</b> is within the 80% limit of <b>${fx(lim,2)} Ω</b> for a ${v.type}${In}. The breaker will disconnect in time.`}
+      : (zs<=max2
+        ? {type:"fail", text:`<b>${fx(zs,2)} Ω</b> is under the table maximum (${fx(max2,2)} Ω) but over 80% of it (${fx(lim,2)} Ω). When the cable warms up it could exceed the limit. Speak to your supervisor: a bigger CPC, shorter run or RCD protection may be needed.`}
+        : {type:"fail", text:`<b>${fx(zs,2)} Ω</b> is over the maximum of <b>${fx(max2,2)} Ω</b> for a ${v.type}${In}. The breaker won't trip fast enough. This needs fixing.`})];
+    return {answer:{label:"Zs", value:zs, unit:"Ω", dp:2, extra:`Max Zs for ${v.type}${In}: <b>${fx(max2,2)} Ω</b> · 80% limit: <b>${fx(lim,2)} Ω</b>`}, steps, keys, checks};
+  },
+  tips:[
+    "Never leave the main earth disconnected after measuring Ze. Reconnect it before anything else.",
+    "Bigger breaker = lower maximum Zs, because it needs more current to trip.",
+    "Type C and D breakers have much lower limits than Type B. Check which one is fitted.",
+    "A live Zs test at the furthest point should come out close to your calculated Ze + R1+R2. If not, find out why."
+  ]
+},
+
+/* 6 PFC */
+{
+  id:"pfc", group:"live", step:5, title:"Prospective fault current", short:"Can the breaker safely stop the worst-case fault?", fshort:"Ipf = U0 ÷ Z",
+  lede:"Divide the voltage by the loop impedance to find the biggest current a fault could draw.",
+  formula:[`I<sub>pf</sub> = U<sub>0</sub> ÷ Z`],
+  words:"Fault current equals voltage divided by the impedance of the fault path.",
+  what:`<p>Prospective fault current is the biggest current that could flow if there was a dead short. It's just Ohm's law: I = V ÷ Z.</p><p>There are two kinds. Line to earth uses Z<sub>e</sub> (prospective earth fault current, PEFC). Line to neutral uses the line–neutral impedance (prospective short-circuit current, PSCC). You record whichever is higher.</p>`,
+  why:`<p>Every breaker and fuse has a breaking capacity: the biggest current it can safely interrupt. If the fault current is higher than that, the device can fail, sometimes explosively. So the fault current at the board must be below the breaking capacity of every device in it.</p><p>The origin of the installation is the worst case, because the impedance is lowest there.</p>`,
+  sources:[
+    ["site","U0: 230 V."],
+    ["tester","Z: measured at the origin. Most multifunction testers also display the fault current directly, so you can use this sum to check it."],
+    ["design","Breaking capacity: printed on the breaker in a small box, e.g. 6000 means 6 kA."],
+    ["site","DNO declared maximum for a typical domestic supply: 16 kA."]
+  ],
+  inputs:[
+    {id:"U", label:"Voltage U0", unit:"V", def:"230"},
+    {id:"Z", label:"Loop impedance at the origin", unit:"Ω", def:"0.35", hint:"Ze for PEFC, or the line–neutral reading for PSCC."},
+    {id:"icn", label:"Breaking capacity of the device", type:"select", def:"6000", opts:[{v:"3000",l:"3 kA (3000)"},{v:"4500",l:"4.5 kA (4500)"},{v:"6000",l:"6 kA (6000)"},{v:"10000",l:"10 kA (10000)"},{v:"16000",l:"16 kA (16000)"}], hint:"Consumer units to BS EN 61439-3 are rated to handle 16 kA with the main switch and fuse upstream, but check the breaker itself."}
+  ],
+  compute(v){
+    if (!(v.Z>0)||!(v.U>0)) return {error:"Enter the voltage and an impedance above zero."};
+    const I=v.U/v.Z, icn=num(v.icn);
+    const steps=[
+      `Divide voltage by impedance: ${tidy(v.U)} ÷ ${tidy(v.Z)} = <b>${fx(I,0)} A</b>.`,
+      `Convert to kA by dividing by 1000: ${fx(I,0)} ÷ 1000 = <b>${fx(I/1000,2)} kA</b>.`,
+      `Compare with the breaking capacity of ${icn/1000} kA.`
+    ];
+    const checks=[ I<=icn
+      ? {type:"pass", text:`<b>${fx(I/1000,2)} kA</b> is below the ${icn/1000} kA breaking capacity. The device can safely interrupt this fault.`}
+      : {type:"fail", text:`<b>${fx(I/1000,2)} kA</b> is above the ${icn/1000} kA breaking capacity. The device may not interrupt this safely. Check the consumer unit's conditional rating and speak to your supervisor.`}];
+    return {answer:{label:"Prospective fault current", value:I, unit:"A", dp:0, extra:`= <b>${fx(I/1000,2)} kA</b>`}, steps, keys:[{cap:"Fault current in amps", seq:[tidy(v.U),"÷",tidy(v.Z),"="]},{cap:"Then in kA", seq:["Ans","÷","1000","="]}], checks};
+  },
+  tips:[
+    "Lower impedance = higher fault current. That's why the origin is the worst place.",
+    "Record the higher of PEFC and PSCC on the certificate.",
+    "On three-phase supplies the line–line fault current is roughly double the single-phase figure. Ask before calculating those.",
+    "Use the fault current at the end of a circuit (230 ÷ Zs) for the adiabatic sum."
+  ]
+},
+
+/* 7 VD */
+{
+  id:"vd", group:"design", title:"Voltage drop", short:"How much voltage the cable loses", fshort:"mV/A/m × Ib × L",
+  lede:"Work out how many volts are lost along a cable and check it's within the limit.",
+  formula:[`VD = (mV/A/m × I<sub>b</sub> × L) ÷ 1000`],
+  words:"Table value times current times length, divided by 1000 to turn millivolts into volts.",
+  what:`<p>Every cable has some resistance, so some voltage is lost along it. The longer the cable and the more current it carries, the more it loses.</p><p>The tables give a figure in millivolts per amp per metre (mV/A/m). Multiply by the current and the length and you get the drop in millivolts.</p>`,
+  why:`<p>Equipment at the end of a long cable gets less voltage than it should. Lights dim, motors struggle and run hot. BS 7671 limits the drop to 3% for lighting and 5% for everything else (on a public supply).</p>`,
+  sources:[
+    ["tables","mV/A/m: BS 7671 Appendix 4 for the cable type. This calculator uses Table 4D5 (flat twin and earth)."],
+    ["design","Ib, the design current: from the load. Use the Ohm's law sum: Ib = P ÷ V."],
+    ["design","Length: from the drawings, in metres. One way only. The table already allows for the return conductor."],
+    ["tables","Limits: Appendix 4, section 6.4. 3% lighting = 6.9 V, 5% other = 11.5 V."]
+  ],
+  inputs:[
+    {id:"size", label:"Cable size (twin and earth)", type:"select", opts:SIZES.map(s=>({v:s,l:`${s} mm² — ${MVAM[s]} mV/A/m`})), def:"2.5"},
+    {id:"ib", label:"Design current Ib", unit:"A", def:"20"},
+    {id:"L", label:"Length (one way)", unit:"m", def:"25"},
+    {id:"kind", label:"Circuit type", type:"select", def:"5", opts:[{v:"3",l:"Lighting — 3% (6.9 V)"},{v:"5",l:"Other uses — 5% (11.5 V)"}]}
+  ],
+  compute(v){
+    if (!(v.ib>0)||!(v.L>0)) return {error:"Enter the design current and the length."};
+    const mv=MVAM[v.size], vd=mv*v.ib*v.L/1000, pct=vd/230*100, lim=num(v.kind), limV=230*lim/100;
+    const steps=[
+      `Look up mV/A/m for ${v.size} mm² twin and earth: <b>${mv}</b>.`,
+      `Multiply: ${mv} × ${tidy(v.ib)} × ${tidy(v.L)} = <b>${fx(mv*v.ib*v.L,0)} mV</b>.`,
+      `Divide by 1000 to get volts: <b>${fx(vd,2)} V</b>.`,
+      `As a percentage of 230 V: ${fx(vd,2)} ÷ 230 × 100 = <b>${fx(pct,1)}%</b>.`,
+      `The limit is ${lim}% = 230 × ${lim} ÷ 100 = <b>${fx(limV,1)} V</b>.`
+    ];
+    const checks=[ vd<=limV
+      ? {type:"pass", text:`<b>${fx(vd,2)} V</b> (${fx(pct,1)}%) is within the ${fx(limV,1)} V limit.`}
+      : {type:"fail", text:`<b>${fx(vd,2)} V</b> (${fx(pct,1)}%) is over the ${fx(limV,1)} V limit. Use a bigger cable or shorten the run.`}];
+    if (vd>limV){
+      const ok=SIZES.find(s=>MVAM[s]*v.ib*v.L/1000<=limV);
+      if (ok) checks.push({type:"info", text:`The smallest twin and earth that meets the limit here is <b>${ok} mm²</b> (${fx(MVAM[ok]*v.ib*v.L/1000,2)} V). Check it still meets the current rating too.`});
+    }
+    return {answer:{label:"Voltage drop", value:vd, unit:"V", dp:2, extra:`= <b>${fx(pct,1)}%</b> of 230 V`}, steps, keys:[{cap:"Voltage drop in volts", seq:[String(mv),"×",tidy(v.ib),"×",tidy(v.L),"÷","1000","="]},{cap:"As a percentage", seq:["Ans","÷","230","×","100","="]}], checks};
+  },
+  tips:[
+    "Use the one-way length. The table value already includes going there and back.",
+    "Some colleges give the drop per metre as a single figure for the circuit. It's the same sum.",
+    "A cable can pass on current rating but fail on voltage drop if it's a long run. Always check both.",
+    "To find the maximum length: L = (allowed mV) ÷ (mV/A/m × Ib)."
+  ]
+},
+
+/* 8 CABLE */
+{
+  id:"cable", group:"design", title:"Cable sizing with correction factors", short:"Ib ≤ In ≤ Iz and the factors that reduce it", fshort:"It ≥ In ÷ factors",
+  lede:"Work out the minimum current rating a cable needs from the table, once you allow for how it's installed.",
+  formula:[`I<sub>b</sub> ≤ I<sub>n</sub> ≤ I<sub>z</sub>`,`I<sub>t</sub> ≥ I<sub>n</sub> ÷ (C<sub>a</sub> × C<sub>g</sub> × C<sub>i</sub> × C<sub>c</sub>)`],
+  words:"Design current must not exceed the breaker, and the breaker must not exceed what the cable can carry. Divide the breaker rating by the correction factors to find the table rating you need.",
+  what:`<p>Three currents matter. I<sub>b</sub> is what the load draws. I<sub>n</sub> is the breaker rating. I<sub>z</sub> is what the cable can actually carry where it's installed. They must go in that order: I<sub>b</sub> ≤ I<sub>n</sub> ≤ I<sub>z</sub>.</p><p>The tables give a rating (I<sub>t</sub>) for ideal conditions. Correction factors reduce it for real conditions. So you divide I<sub>n</sub> by the factors to find the table rating you need to look for.</p>`,
+  why:`<p>Cable gets rid of heat through its surface. Wrap it in insulation, bunch it with other cables, or run it somewhere hot, and it can't cool down. If it carries its normal current anyway, the insulation overheats and breaks down. The factors make sure the cable is big enough for where it actually goes.</p>`,
+  sources:[
+    ["design","Ib: from the load (P ÷ V). In: the breaker you choose, at least Ib."],
+    ["tables","Ca, ambient temperature: BS 7671 Table 4B1. 30°C is the reference (factor 1.00)."],
+    ["tables","Cg, grouping: Table 4C1. Applies when cables are bunched together."],
+    ["tables","Ci, thermal insulation: Table 52.2. Applies when the cable runs through insulation."],
+    ["tables","Cc: 0.725 only for rewireable (BS 3036) fuses. Otherwise 1."],
+    ["tables","It: Table 4D5 for twin and earth, under the right installation method."]
+  ],
+  inputs:[
+    {id:"ib", label:"Design current Ib", unit:"A", def:"26"},
+    {id:"In", label:"Breaker rating In", type:"select", def:"32", opts:RATINGS.map(r=>({v:String(r),l:r+" A"}))},
+    {id:"ca", label:"Ca — ambient temperature", type:"select", def:"1", opts:[{v:"1.03",l:"25°C — 1.03"},{v:"1",l:"30°C — 1.00"},{v:"0.94",l:"35°C — 0.94"},{v:"0.87",l:"40°C — 0.87"},{v:"0.79",l:"45°C — 0.79"},{v:"0.71",l:"50°C — 0.71"}]},
+    {id:"cg", label:"Cg — grouping (circuits bunched)", type:"select", def:"0.8", opts:[{v:"1",l:"1 circuit — 1.00"},{v:"0.8",l:"2 circuits — 0.80"},{v:"0.7",l:"3 circuits — 0.70"},{v:"0.65",l:"4 circuits — 0.65"},{v:"0.6",l:"5 circuits — 0.60"},{v:"0.57",l:"6 circuits — 0.57"}]},
+    {id:"ci", label:"Ci — length surrounded by insulation", type:"select", def:"1", opts:[{v:"1",l:"None — 1.00"},{v:"0.88",l:"50 mm — 0.88"},{v:"0.78",l:"100 mm — 0.78"},{v:"0.63",l:"200 mm — 0.63"},{v:"0.51",l:"400 mm — 0.51"},{v:"0.5",l:"500 mm or more — 0.50"}]},
+    {id:"cc", label:"Cc — protective device", type:"select", def:"1", opts:[{v:"1",l:"MCB, RCBO or cartridge fuse — 1.00"},{v:"0.725",l:"Rewireable BS 3036 fuse — 0.725"}]},
+    {id:"method", label:"Installation method (for the table lookup)", type:"select", def:"C", opts:Object.keys(METHOD_NAMES).map(k=>({v:k,l:METHOD_NAMES[k]}))}
+  ],
+  compute(v){
+    if (!(v.ib>0)) return {error:"Enter the design current Ib."};
+    const In=num(v.In), f=[v.ca,v.cg,v.ci,v.cc].map(num), prod=f.reduce((a,b)=>a*b,1), It=In/prod;
+    const tab=IT[v.method], pick=SIZES.find(s=>tab[s]>=It);
+    const steps=[
+      `Check I<sub>b</sub> ≤ I<sub>n</sub>: ${tidy(v.ib)} A ${v.ib<=In?"≤":">"} ${In} A ${v.ib<=In?"✓":"✗"}`,
+      `Multiply the factors together: ${f.map(tidy).join(" × ")} = <b>${fx(prod,3)}</b>.`,
+      `Divide the breaker rating by that: ${In} ÷ ${fx(prod,3)} = <b>${fx(It,1)} A</b>. This is the minimum I<sub>t</sub> to look for in the table.`,
+      pick ? `Look down Table 4D5 (${METHOD_NAMES[v.method].split(" — ")[0]}) for the first cable rated at least ${fx(It,1)} A: <b>${pick} mm²</b> at ${tab[pick]} A.`
+           : `No twin and earth up to 16 mm² is big enough under this method. Change the method or the cable type.`,
+      pick ? `Actual I<sub>z</sub> once installed: ${tab[pick]} × ${fx(prod,3)} = <b>${fx(tab[pick]*prod,1)} A</b>, which is ≥ ${In} A ✓` : ""
+    ].filter(Boolean);
+    const checks=[];
+    if (v.ib>In) checks.push({type:"fail", text:`I<sub>b</sub> (${tidy(v.ib)} A) is bigger than the breaker (${In} A). Choose a bigger breaker first.`});
+    if (pick) checks.push({type:"pass", text:`Use at least <b>${pick} mm²</b> twin and earth. Now check voltage drop and Zs for the same cable.`});
+    else checks.push({type:"fail", text:"Nothing in the twin and earth table is big enough for these conditions."});
+    checks.push({type:"info", text:"Ratings in this app are for flat twin and earth (Table 4D5) and a few common methods. Check against your copy of BS 7671 or the On-Site Guide."});
+    return {answer:{label:"Minimum tabulated rating It", value:It, unit:"A", dp:1, extra: pick?`Smallest suitable cable: <b>${pick} mm²</b>`:""}, steps, keys:[{cap:"Minimum It", seq:[String(In),"÷","(",...f.flatMap((x,i)=>i?["×",tidy(x)]:[tidy(x)]),")","="]}], checks};
+  },
+  tips:[
+    "Factors are all 1 or less. Dividing by them makes the number bigger, which is right: you need a bigger cable.",
+    "Only use the factors that apply. If the cable is clipped on its own in a 30°C room, they're all 1.",
+    "Use In (the breaker), not Ib, when dividing by the factors. That's what protects the cable.",
+    "After sizing, always check voltage drop and Zs for the cable you've picked."
+  ],
+  extraRef(){
+    return `<div class="scroll"><table class="ref"><thead><tr><th>Size</th><th>Method C</th><th>Method 100</th><th>Method 103</th></tr></thead><tbody>${SIZES.map(s=>`<tr><td>${s} mm²</td><td>${IT.C[s]} A</td><td>${IT["100"][s]} A</td><td>${IT["103"][s]} A</td></tr>`).join("")}</tbody></table></div><p class="hint" style="color:var(--muted);font-size:.85rem">Twin and earth, 70°C thermoplastic, from BS 7671 Table 4D5. Check against your own copy.</p>`;
+  }
+},
+
+/* 9 ADIABATIC */
+{
+  id:"adiabatic", group:"design", title:"Adiabatic equation", short:"Is the CPC thick enough to survive a fault?", fshort:"S = √(I²t) ÷ k",
+  lede:"Work out the smallest CPC that can carry the fault current until the breaker trips.",
+  formula:[`S = √(I² × t) ÷ k`],
+  words:"Square the fault current, multiply by the time, square root it, then divide by k.",
+  what:`<p>During an earth fault, a large current flows through the CPC for a very short time. "Adiabatic" means the heat has no time to escape, so it all goes into the copper.</p><p>The equation gives the minimum cross-sectional area (S, in mm²) the CPC needs so it doesn't get hot enough to damage the insulation before the breaker trips.</p>`,
+  why:`<p>Twin and earth has a smaller CPC than the line conductor (2.5/1.5, for example). This sum proves the smaller CPC is still big enough. If it isn't, it could melt in a fault and leave the metalwork live.</p>`,
+  sources:[
+    ["tester","I, fault current at the end of the circuit: 230 ÷ Zs. Use the PFC sum with your Zs reading."],
+    ["tables","t, disconnection time: from the breaker's time/current curve in Appendix 3. For an MCB tripping instantly, 0.1 s is commonly used."],
+    ["tables","k: BS 7671 Table 54.3 gives 115 for a copper CPC inside a PVC cable (twin and earth). Table 54.2 gives 143 for a separate PVC-insulated copper CPC."],
+    ["design","Actual CPC size: from the sheath print."]
+  ],
+  inputs:[
+    {id:"I", label:"Fault current I", unit:"A", def:"280", hint:"230 ÷ Zs. e.g. 230 ÷ 0.82 = 280 A."},
+    {id:"t", label:"Disconnection time t", unit:"s", def:"0.1", hint:"0.1 s for an MCB in its instant-trip region."},
+    {id:"k", label:"k factor", type:"select", def:"115", opts:[{v:"115",l:"115 — copper CPC in a PVC cable (T&E)"},{v:"143",l:"143 — separate PVC-insulated copper CPC"}]},
+    {id:"cpc", label:"Actual CPC size", type:"select", opts:sizeOpts, def:"1.5"}
+  ],
+  compute(v){
+    if (!(v.I>0)||!(v.t>0)) return {error:"Enter the fault current and the disconnection time."};
+    const k=num(v.k), sq=v.I*v.I, x=sq*v.t, rt=Math.sqrt(x), S=rt/k, act=num(v.cpc);
+    const steps=[
+      `Square the current: ${tidy(v.I)}² = <b>${fx(sq,0)}</b>.`,
+      `Multiply by the time: ${fx(sq,0)} × ${tidy(v.t)} = <b>${fx(x,0)}</b>.`,
+      `Square root: √${fx(x,0)} = <b>${fx(rt,1)}</b>.`,
+      `Divide by k: ${fx(rt,1)} ÷ ${k} = <b>${fx(S,2)} mm²</b>.`,
+      `Compare with the actual CPC: ${v.cpc} mm² ${act>=S?"≥":"<"} ${fx(S,2)} mm².`
+    ];
+    const checks=[ act>=S
+      ? {type:"pass", text:`The ${v.cpc} mm² CPC is bigger than the <b>${fx(S,2)} mm²</b> needed. It will survive the fault.`}
+      : {type:"fail", text:`The ${v.cpc} mm² CPC is smaller than the <b>${fx(S,2)} mm²</b> needed. Use a bigger cable or CPC, or reduce the disconnection time.`}];
+    return {answer:{label:"Minimum CPC size S", value:S, unit:"mm²", dp:2}, steps, keys:[{cap:"Whole sum in one go", seq:["√","(",tidy(v.I),"x²","×",tidy(v.t),")","÷",String(k),"="]}], checks};
+  },
+  tips:[
+    "Do it in order: square, times t, square root, divide by k. Brackets matter on the calculator.",
+    "A smaller fault current needs a longer time to trip, so it doesn't always mean a smaller S. Always use the time that matches the current.",
+    "Use the fault current at the far end of the circuit (the lowest), because that's where disconnection is slowest.",
+    "S is in mm². Compare it with the CPC size, not the line conductor."
+  ]
+}
+];
+
+const GROUPS = [
+  {id:"basics", name:"Start here", note:"The foundation. Get comfortable with this first."},
+  {id:"dead", name:"Dead tests", note:"Done with the supply isolated, in this order."},
+  {id:"live", name:"Live tests", note:"Done with the supply on, after the dead tests have passed."},
+  {id:"design", name:"Design checks", note:"Sums for choosing cables and proving they're safe."}
+];
+const ORDER = GROUPS.flatMap(g=>CALCS.filter(c=>c.group===g.id));
+
+/* ---------- state ---------- */
+const state = {};   // per-calc input values (raw strings)
+const tryMode = {}; // per-calc have-a-go flag
+const revealed = {};
+
+/* ---------- rendering ---------- */
+function renderHome(){
+  $("#title").textContent = "Testing Maths";
+  $("#back").hidden = true;
+  document.title = "Testing Maths";
+  let html = `<p class="intro">Each sum explains <strong>what it's for</strong>, <strong>why it matters</strong>, <strong>where the numbers come from</strong> and <strong>how to key it into a calculator</strong>. Switch on <strong>Have a go first</strong> to try the sum yourself before seeing the answer.</p>`;
+  GROUPS.forEach(g=>{
+    const items = CALCS.filter(c=>c.group===g.id);
+    html += `<section class="group"><h2>${g.name}</h2><p>${g.note}</p><ul class="calc-list">`;
+    items.forEach((c,i)=>{
+      const n = c.step ? c.step : "";
+      html += `<li><a href="#/${c.id}"><span class="n" aria-hidden="true">${n}</span><span><span class="t">${c.title}</span><span class="s">${c.short}</span></span><span class="f">${c.fshort}</span></a></li>`;
+    });
+    html += `</ul></section>`;
+  });
+  html += `<p style="color:var(--muted);font-size:.9rem">Numbers next to the tests show the usual order on site. Polarity and RCD tests sit between these too, but they're pass/fail checks rather than sums.</p>`;
+  $("#app").innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+function fieldHTML(c, f){
+  const val = state[c.id][f.id];
+  const fid = `${c.id}-${f.id}`;
+  if (f.type==="select"){
+    return `<div class="field"><label for="${fid}">${f.label}</label><select id="${fid}" data-f="${f.id}">${f.opts.map(o=>`<option value="${esc(o.v)}"${String(val)===String(o.v)?" selected":""}>${esc(o.l)}</option>`).join("")}</select>${f.hint?`<div class="hint">${f.hint}</div>`:""}</div>`;
+  }
+  if (f.type==="check"){
+    return `<div class="field check"><label><input type="checkbox" id="${fid}" data-f="${f.id}"${val?" checked":""}> ${f.label}</label>${f.hint?`<div class="hint">${f.hint}</div>`:""}</div>`;
+  }
+  return `<div class="field"><label for="${fid}">${f.label}</label><div class="row"><input id="${fid}" data-f="${f.id}" type="text" inputmode="decimal" autocomplete="off" value="${esc(val)}"><span class="unit">${f.unit||""}</span></div>${f.hint?`<div class="hint">${f.hint}</div>`:""}</div>`;
+}
+
+function renderCalc(c){
+  if (!state[c.id]){ state[c.id]={}; c.inputs.forEach(f=>state[c.id][f.id]=f.def); }
+  $("#title").textContent = c.title;
+  $("#back").hidden = false;
+  document.title = c.title + " — Testing Maths";
+  const idx = ORDER.indexOf(c), prev = ORDER[idx-1], next = ORDER[idx+1];
+  const tagName = {tester:"Your tester", site:"Site / supply", tables:"Tables", design:"Drawings / kit"};
+  let html = `<p class="lede">${c.lede}</p>
+  <div class="formula">${c.formula.map(f=>`<span class="eq">${f}</span>`).join("")}<span class="words">${c.words}</span></div>
+  <details class="explain" open><summary>What it's for</summary><div class="body">${c.what}</div></details>
+  <details class="explain"><summary>Why it matters</summary><div class="body">${c.why}</div></details>
+  <details class="explain"><summary>Where the numbers come from</summary><div class="body"><ul class="sources">${c.sources.map(s=>`<li><span class="tag ${s[0]}">${tagName[s[0]]}</span><span>${s[1]}</span></li>`).join("")}</ul></div></details>
+  ${c.extraRef?`<details class="explain"><summary>Current rating table</summary><div class="body">${c.extraRef()}</div></details>`:""}
+  <h3 class="sec">Your numbers</h3>
+  <div class="inputs" id="inputs">${c.inputs.map(f=>fieldHTML(c,f)).join("")}</div>
+  <label class="mode"><span>Have a go first<small>Hide the answer and working until you've tried it yourself.</small></span><span class="switch"><input type="checkbox" id="trymode"${tryMode[c.id]?" checked":""}><span class="track"></span></span></label>
+  <div id="out" aria-live="polite"></div>
+  <h3 class="sec">Watch out for</h3>
+  <ul class="tips">${c.tips.map(t=>`<li>${t}</li>`).join("")}</ul>
+  <nav class="pager">${prev?`<a href="#/${prev.id}"><small>Previous</small>‹ ${prev.title}</a>`:"<span></span>"}${next?`<a class="next" href="#/${next.id}"><small>Next</small>${next.title} ›</a>`:""}</nav>`;
+  $("#app").innerHTML = html;
+
+  $("#inputs").addEventListener("input", e=>{
+    const el=e.target, k=el.dataset.f; if(!k) return;
+    state[c.id][k] = el.type==="checkbox" ? el.checked : el.value;
+    revealed[c.id]=false; update(c);
+  });
+  $("#trymode").addEventListener("change", e=>{ tryMode[c.id]=e.target.checked; revealed[c.id]=false; update(c); });
+  update(c);
+  window.scrollTo(0,0);
+}
+
+function keysHTML(k){
+  return `<div class="keyset"><p class="cap">${k.cap}</p><div class="keys">${k.seq.map(t=>{
+    const op = /^[+−×÷()√=]$|^x²$|^x⁻¹$|^Ans$/.test(t);
+    const cls = t==="=" ? "k eq" : (op ? "k op" : "k");
+    return `<span class="${cls}">${esc(t)}</span>`;
+  }).join("")}</div></div>`;
+}
+
+function update(c){
+  const raw = state[c.id], v = {};
+  c.inputs.forEach(f=>{
+    if (f.type==="select") v[f.id]=raw[f.id];
+    else if (f.type==="check") v[f.id]=!!raw[f.id];
+    else v[f.id]=num(raw[f.id]);
+  });
+  let r;
+  try { r = c.compute(v); } catch(err){ r = {error:"Something in the inputs doesn't add up. Check each box."}; }
+  const out = $("#out");
+  if (r.error){ out.innerHTML = `<div class="answer"><p class="error">${r.error}</p></div>`; return; }
+
+  const a = r.answer;
+  const hide = tryMode[c.id] && !revealed[c.id];
+  let html = "";
+  if (tryMode[c.id]){
+    html += `<div class="attempt"><label for="mine" style="font-weight:600">Your answer for ${a.label.charAt(0).toLowerCase()+a.label.slice(1)} (${a.unit})</label><div class="row"><input id="mine" type="text" inputmode="decimal" autocomplete="off" value="${esc(state[c.id].__mine||"")}"><button class="btn" id="checkbtn" type="button">Check</button></div>${hide?`<button class="btn ghost" id="giveup" type="button">Just show me</button>`:""}<div id="fb"></div></div>`;
+  }
+  if (hide){
+    html += `<div class="answer"><p class="hidden-ans">Work it out on paper or your calculator, then type your answer above and press Check.</p></div>`;
+  } else {
+    html += `<div class="answer"><div class="lbl">${a.label}</div><div class="val">${fx(a.value,a.dp)}<span class="u">${a.unit}</span></div>${a.extra?`<div class="extra">${a.extra}</div>`:""}${(r.checks||[]).map(ch=>`<div class="verdict ${ch.type}">${ch.text}</div>`).join("")}</div>`;
+    html += `<h3 class="sec">On your calculator</h3>${r.keys.map(keysHTML).join("")}`;
+    html += `<h3 class="sec">Step by step</h3><ol class="steps">${r.steps.map(s=>`<li>${s}</li>`).join("")}</ol>`;
+  }
+  out.innerHTML = html;
+
+  if (tryMode[c.id]){
+    const fbBox = $("#fb");
+    const doCheck = ()=>{
+      const mine = num($("#mine").value); state[c.id].__mine = $("#mine").value;
+      if (!Number.isFinite(mine)){ fbBox.innerHTML = `<div class="feedback verdict info">Type a number first.</div>`; return; }
+      const target = Math.round(a.value*Math.pow(10,a.dp))/Math.pow(10,a.dp);
+      const close = Math.abs(mine-a.value) <= Math.max(Math.abs(a.value)*0.02, Math.pow(10,-a.dp));
+      revealed[c.id]=true; update(c);
+      const fb = $("#fb");
+      if (close) fb.innerHTML = `<div class="feedback verdict pass">Spot on. ${tidy(mine)} ${a.unit} is right. Check the working below to make sure you got there the same way.</div>`;
+      else {
+        let hint = "";
+        const rr = mine/a.value;
+        if (Math.abs(rr-1000)<50 || Math.abs(rr-0.001)<0.00005) hint = " You're out by a factor of 1000. Did you forget to divide (or multiply) by 1000?";
+        else if (Math.abs(rr-1/1.2)<0.02 || Math.abs(rr-1.2)<0.02) hint = " You're out by the 1.20 temperature factor.";
+        else if (Math.abs(rr-4)<0.1 || Math.abs(rr-0.25)<0.01) hint = " You're out by a factor of 4. Check the ÷ 4 step.";
+        fb.innerHTML = `<div class="feedback verdict fail">Not quite. You put ${tidy(mine)} ${a.unit}; the answer is ${fx(target,a.dp)} ${a.unit}.${hint} Go through the steps below to see where it went different.</div>`;
+      }
+    };
+    $("#checkbtn").addEventListener("click", doCheck);
+    $("#mine").addEventListener("keydown", e=>{ if(e.key==="Enter") doCheck(); });
+    $("#mine").addEventListener("input", e=>{ state[c.id].__mine = e.target.value; });
+    const g=$("#giveup"); if(g) g.addEventListener("click", ()=>{ revealed[c.id]=true; update(c); });
+  }
+}
+
+/* ---------- routing ---------- */
+function route(){
+  const id = location.hash.replace(/^#\/?/, "");
+  const c = CALCS.find(x=>x.id===id);
+  if (c) renderCalc(c); else renderHome();
+}
+$("#back").addEventListener("click", ()=>{ location.hash = ""; });
+window.addEventListener("hashchange", route);
+route();
+
+if ("serviceWorker" in navigator) { window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
+})();
+</script>
+</body>
+</html>
