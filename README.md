@@ -14,6 +14,25 @@ Guided calculators for 2nd-year electrical apprentices. Each sum explains what i
 - Cable sizing with correction factors
 - Adiabatic equation
 
+## Quiz and progress
+
+- **Quiz tab:** Quick fire (mixed), Practice sums (random numbers every time), Which test? Which sum? (multiple choice), Retry my mistakes, and a short quiz for each topic. Every quiz can be retaken with new questions, or just the ones that were wrong.
+- **Progress tab:** scores, quiz history, how well each topic is going, and the weakest topic to practise next.
+- Progress saves automatically on the phone, in the browser's storage for this site. On iPhone, use the app from the Home Screen icon: Safari and the Home Screen app keep separate progress. **Save a backup** (Progress tab) makes a file that can be restored on the same or a new phone.
+
+## Releasing an update
+
+1. Make your changes.
+2. Change `APP_VERSION` in `index.html` **and** `VERSION` in `sw.js` to the same new number (e.g. `1.1.0` → `1.2.0`).
+3. Optionally add a line to `WHATS_NEW` in `index.html`. It shows once after the update.
+4. Push to `main`. Within a few minutes, anyone opening the app sees **"New version ready — Update"**. Tapping it reloads onto the new version and keeps their progress.
+
+If the version numbers aren't changed, phones keep running the old cached copy.
+
+## Adding quiz questions
+
+Multiple-choice questions live in `questions.js`. Copy a block, give it a new unique `id`, and put the correct answer first in `options` (the app shuffles them). Then release an update as above.
+
 ## Put it on GitHub Pages
 
 1. Upload every file in this folder to a new public repo (keep the `icons` folder).
